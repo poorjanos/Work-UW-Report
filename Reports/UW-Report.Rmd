@@ -1,0 +1,227 @@
+---
+title: "AFC kötvényesítés havi riport"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(plotly)
+library(scales)
+library(stringr)
+library(ggthemes)
+```
+
+
+Bevezetõ {data-navmenu="Tartalom"}
+===================================== 
+
+Column {.sidebar data-width=300}
+-------------------------------------
+
+### Mirõl szól ez a riport?
+
+* Lorem ipsum
+* Lorem ipsum
+    + Lorem ipsum
+    + Lorem ipsum
+    + Lorem ipsum munkaerõ-szükséglet formájában.
+* Használat: a fenti *Tartalom* gombra kattintva további lapok nyithatók mag
+
+Row {data-height=200}
+-------------------------------------
+
+### Chart 2
+```{r}
+```
+
+### Chart 2
+```{r}
+```
+
+### Chart 3
+```{r}
+```   
+
+Row {data-height=800}
+-------------------------------------
+### Chart 4
+```{r}
+```
+
+
+
+Sikerarány {.storyboard data-navmenu="Tartalom"}
+=========================================
+
+### Ezen az ábrán automatikus kötvényesítés sikerességét a **teljes állományon** értékeljük ki több mutató mentén 
+
+```{r, fig.width=10}
+
+```
+
+***
+Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+
+- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
+- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
+- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés  ### Ezen az ábrán automatikus kötvényesítés sikerességét **termékcsoportonként** értékeljük ki több mutató mentén  ```{r, fig.width=12, fig.height=6}
+
+
+***
+Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+
+- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
+- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
+- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
+
+### Ezen az ábrán automatikus kötvényesítés sikerességét **termékcsoportonként** és **kötési módonként** értékeljük ki több mutató mentén
+
+```{r, fig.width=12, fig.height=6}
+```
+
+***
+Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+
+- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
+- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
+- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
+
+### Ezen az ábrán automatikus kötvényesítés sikerességét a **KGFB** termékcsoporton és annak **kötési okaiként** értékeljük ki több mutató mentén
+
+```{r, fig.width=12, fig.height=6}
+```
+
+***
+Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+
+- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
+- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
+- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
+
+
+
+Hibaokok {.storyboard data-navmenu="Tartalom"}
+=========================================
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibaokok relatív gyakoriságát mutatjuk meg a **teljes állományon** 
+
+```{r, fig.width=14, fig.height=6}
+```
+
+***
+* A hibaok relatív gyakorisága azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy hibaok az összes hibaok mekkora hányadát tette ki, vagyis relatíve mennyire nagy a súlya
+* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ okokat figyelhetünk meg, ezért fontos a hibaokokat termékenként értelmezni (lásd. következõ dia)
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibaokok relatív gyakoriságát mutatjuk meg **termékcsoportonként** 
+
+```{r, fig.width=14, fig.height=6}
+```
+
+***
+* A hibaok relatív gyakorisága a **termékcsopoton belül** azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy hibaok a **termékcsoport esetében számolt** összes hibaok mekkora hányadát tette ki, vagyis relatíve mennyire nagy a termékcsoporton belüli súlya
+* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ okokat figyelhetünk meg, ezért fontos a hibaokokat termékenként értelmezni
+* Megfigyelhetõ, hogy a termékcsoportokra más-más hibaokok jellemzõek, jóllehet néhány esetében közös elõforduás is tapasztalható
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a KGFB termékcsoportban** 
+
+```{r, fig.width=14, fig.height=8}
+```
+
+***
+* Egy adott hibaok gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hiba egyre gyakoribb, vagy egyre ritkább elõfordulását
+* A pontos beavatkozási területek meghatározásához ugyanakkor nem elegendõ a hibaokok külön-külön vizsgálata, hanem az egymással együtt elõforduló *mintázatok* vizsgálata szükséges
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a Lakás termékcsoportban** 
+
+```{r, fig.width=14, fig.height=8}
+```
+
+***
+* Egy adott hibaok gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hiba egyre gyakoribb, vagy egyre ritkább elõfordulását
+* A pontos beavatkozási területek meghatározásához ugyanakkor nem elegendõ a hibaokok külön-külön vizsgálata, hanem az egymással együtt elõforduló *mintázatok* vizsgálata szükséges
+
+
+
+
+Hibamintázatok {.storyboard data-navmenu="Tartalom"}
+=========================================
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok relatív gyakoriságát mutatjuk meg a **teljes állományon** 
+
+```{r, fig.width=14, fig.height=6}
+```
+
+***
+* A hibamintázat együttesen elõforduló hibaokok láncolatát jelenti
+* A hibamintázat pontosabb képet ad arról, hogy az automatikus menesztés miért vallott kudarcot
+* Az egy mintázaton belüli különbözõ hibaokokat három csillag (***) választja el egymástól
+* Vannak mintázatok, melyek mindössze egyetlen okból állnak
+* A hibamintázat relatív gyakorisága azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy mintázat az összes mintázat mekkora hányadát tette ki, vagyis relatíve mennyire nagy a súlya
+* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ mintázatokat figyelhetünk meg, ezért fontos a mintázatokat termékenként értelmezni (lásd. következõ dia)
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok relatív gyakoriságát mutatjuk meg **termékcsoportonként** 
+
+```{r, fig.width=14, fig.height=6}
+```
+
+***
+* A hibamintázat együttesen elõforduló hibaokok láncolatát jelenti
+* A hibamintázat pontosabb képet ad arról, hogy az automatikus menesztés miért vallott kudarcot
+* Vannak mintázatok, melyek mindössze egyetlen okból állnak
+* A hibamintázat relatív gyakorisága a termékcsoporton belülazt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy mintázat a termékcsport esetében megfigyelt összes mintázat mekkora hányadát tette ki, vagyis relatíve mennyire nagy a  termékcsoporton belüli súlya
+* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ mintázatokat figyelhetünk meg, ezért fontos a mintázatokat termékenként értelmezni
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibamintázat gyakoriságának idõbeli alakulását** mutatjuk meg **a KGFB termékcsoportban** 
+
+```{r, fig.width=14, fig.height=8}
+```
+
+***
+* Egy adott hibamintázat gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hibák egyre gyakoribb, vagy egyre ritkább elõfordulását
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a Lakás termékcsoportban** 
+
+```{r, fig.width=14, fig.height=8}
+```
+
+***
+* Egy adott hibamintázat gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hibák egyre gyakoribb, vagy egyre ritkább elõfordulását
+
+
+
+Költségek {.storyboard data-navmenu="Tartalom"}
+=========================================
+
+### Ezen az ábrán az automatikus kötvényesítés hibaágának manuális utókezelésének költségeit mutatjuk meg **termékcsoportonként** idõben
+
+```{r, fig.width=12, fig.height=6}
+```
+
+***
+* Az automatikus kötvényesítés hibára futása esetén az ajánlatot manuálisan kell feldolgozni
+* A workflow rendszer (Kontakt) minden manuális tevékenységet tárol, így ponosan kiszámolható a hibaág kezelésének FTE igénye
+* Az FTE igény nem egyenlõ a létszámigénnyel, mivel az FTE a tiszta munkaidõigényt mutatja és nem számol a betegségek és szabadságok hatásával
+* A létszámigény meghatározásához az FTE igény +25%-os korrekciója az iparági sztenderd
+* A sikerarány és a manuális munka FTE költség negatív korrelációja jól látható az ábrán: ha a sikerarány csökken, az FTE igény nõ
+
+
+### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok havi FTE igényét mutatjuk meg **termékcsoportonként**
+
+```{r, fig.width=14, fig.height=6}
+```
+
+***
+* A termékcsoportonkénti hiba mintázatok FTE igénye megmutatja a vállalat számára legköltségesebb hibadimenziókat és segít a további optimalizáció irányának kijelölésében

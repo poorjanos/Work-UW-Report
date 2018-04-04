@@ -12,6 +12,8 @@ dir.create(here::here("Data"), showWarnings = FALSE)
 dir.create(here::here("Reports"), showWarnings = FALSE)
 dir.create(here::here("SQL"), showWarnings = FALSE)
 
+# Import helper functions
+source(here::here("R", "data_manipulation.R"))
 
 #########################################################################################
 # Data Extraction #######################################################################
@@ -84,15 +86,7 @@ t_uw <- t_uw %>% mutate(UW_TIP = case_when(.$KIMENET == 'Sikeres kpm' ~ 'Auto-UW
 # Total lead time with total volumes
 
 # Gen data
-t_page1 <- t_uw %>% group_by(IDOSZAK) %>%
-  summarize(
-    ÁTLAG = mean(ERK_SZERZ, na.rm = TRUE),
-    MEDIÁN = median(ERK_SZERZ, na.rm = TRUE),
-    VOLUMEN = length(VONALKOD)
-  ) %>%
-  gather(MUTATÓ,  ÉRTÉK,-IDOSZAK) %>%
-  mutate(DIMENZIÓ  = case_when(.$MUTATÓ  == 'VOLUMEN' ~ 'VOLUMEN [db]',
-                               TRUE ~ 'ÁTFUTÁS [mnap]'))
+t_page1 <- gen_aggregate(t_uw, "IDOSZAK")
 
 # Plot
 plot1 <- ggplot(t_page1, aes(x = IDOSZAK, y =   ÉRTÉK)) +
@@ -106,7 +100,7 @@ plot1 <- ggplot(t_page1, aes(x = IDOSZAK, y =   ÉRTÉK)) +
        x = "Idõszak",
        colour = "Mutató") +
   theme(legend.position = c(0.1, 0.85),
-        axis.text.x = element_text(angle = 90))
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 # Adjust facet sizes manually
 # Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
@@ -119,17 +113,8 @@ grid.draw(gt1)
 # Total lead time with total volumes broken down by UW type
 
 # Gen data
-t_page2 <- t_uw %>% group_by(IDOSZAK, UW_TIP) %>%
-  summarize(
-    ÁTLAG = mean(ERK_SZERZ, na.rm = TRUE),
-    MEDIÁN = median(ERK_SZERZ, na.rm = TRUE),
-    VOLUMEN = length(VONALKOD)
-  ) %>%
-  gather(MUTATÓ,  ÉRTÉK, -IDOSZAK, -UW_TIP) %>%
-  ungroup() %>% 
-  mutate(DIMENZIÓ  = case_when(.$MUTATÓ  == 'VOLUMEN' ~ 'VOLUMEN [db]',
-                               TRUE ~ 'ÁTFUTÁS [mnap]'))
-
+t_page2 <- gen_aggregate(t_uw, "IDOSZAK", "UW_TIP")
+  
 # Plot
 plot2 <- ggplot(t_page2, aes(x = IDOSZAK, y =   ÉRTÉK)) +
   facet_grid(DIMENZIÓ  ~ UW_TIP, scales = "free", space = "fixed") +
@@ -142,10 +127,37 @@ plot2 <- ggplot(t_page2, aes(x = IDOSZAK, y =   ÉRTÉK)) +
        x = "Idõszak",
        colour = "Mutató") +
   theme(legend.position = c(0.1, 0.85),
-        axis.text.x = element_text(angle = 90))
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 # Adjust facet sizes manually
 # Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
 gt2 = ggplot_gtable(ggplot_build(plot2))
 gt2$heights[9] = 0.5*gt2$heights[9]
 grid.draw(gt2)
+
+
+# Page3 ---------------------------------------------------------------------------------
+# Total lead time with total volumes broken down by product line
+
+# Gen data
+t_page3 <- gen_aggregate(t_uw, "IDOSZAK", "TERMCSOP")
+  
+# Plot
+plot3 <- ggplot(t_page3, aes(x = IDOSZAK, y =   ÉRTÉK)) +
+  facet_grid(DIMENZIÓ  ~ TERMCSOP, scales = "free", space = "fixed") +
+  geom_line(data = subset(t_page3, DIMENZIÓ   == "ÁTFUTÁS [mnap]"),
+            aes(group = MUTATÓ, colour = MUTATÓ)) +
+  geom_point(data = subset(t_page3, DIMENZIÓ   == "ÁTFUTÁS [mnap]"),
+             aes(group = MUTATÓ, colour = MUTATÓ)) +
+  geom_bar(data = subset(t_page3, DIMENZIÓ   == "VOLUMEN [db]"), stat = "identity") +
+  labs(y = "Értékek",
+       x = "Idõszak",
+       colour = "Mutató") +
+  theme(legend.position = c(0.05, 0.9),
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt3 = ggplot_gtable(ggplot_build(plot3))
+gt3$heights[9] = 0.5*gt3$heights[9]
+grid.draw(gt3)
