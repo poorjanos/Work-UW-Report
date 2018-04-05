@@ -10,17 +10,14 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(lubridate)
-library(plotly)
 library(scales)
-library(stringr)
-library(ggthemes)
+library(grid)
+library(here)
+library(ggplot2)
 ```
 
 
-Bevezetõ {data-navmenu="Tartalom"}
+Áttekintés
 ===================================== 
 
 Column {.sidebar data-width=300}
@@ -28,104 +25,257 @@ Column {.sidebar data-width=300}
 
 ### Mirõl szól ez a riport?
 
-* Lorem ipsum
-* Lorem ipsum
-    + Lorem ipsum
-    + Lorem ipsum
-    + Lorem ipsum munkaerõ-szükséglet formájában.
-* Használat: a fenti *Tartalom* gombra kattintva további lapok nyithatók mag
+* Az ajánlat feldolgozási folyamat központi és legerõforrásigényesebb része az ajánlat AFC-hez érkezésétõl a kötvényesítésig (menesztésig) tartó szakasz
+* Ez a riport havonta követi az érkezéstõl menesztésig tartó szakasz
+    + fõ teljesítménymutatóinak változását és
+    + volumenének alakulását
+* A riport külön tartalmi blokkban mutatja meg
+    + a teljes folymatot (automatán és manuálisan kezelt folyamatágak egyben)
+    + és csak a manuális folymatot (AFC core folyamata)
 
 Row {data-height=200}
 -------------------------------------
 
-### Chart 2
+### Átfutási idõ átlag (utolsó zárt hónap)
 ```{r}
+# Fetch data
+t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
+# Plot
+flexdashboard::valueBox(t_page1 %>% filter(MUTATÓ == "ÁTLAG", IDOSZAK == max(IDOSZAK)) %>% select(ÉRTÉK) %>% round(digits = 2), icon = "fa-line-chart")
 ```
 
-### Chart 2
+### Átfutási idõ medián (utolsó zárt hónap)
 ```{r}
+# Fetch data
+t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
+# Plot
+flexdashboard::valueBox(t_page1 %>% filter(MUTATÓ == "MEDIÁN", IDOSZAK == max(IDOSZAK)) %>% select(ÉRTÉK) %>% round(digits = 2), icon = "fa-line-chart")
 ```
 
-### Chart 3
+### Volumen (utolsó zárt hónap)
 ```{r}
+# Fetch data
+t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
+# Plot
+flexdashboard::valueBox(t_page1 %>% filter(MUTATÓ == "VOLUMEN", IDOSZAK == max(IDOSZAK)) %>% select(ÉRTÉK) %>% round(digits = 2), icon = "fa-bar-chart")
 ```   
 
 Row {data-height=800}
 -------------------------------------
-### Chart 4
-```{r}
+### Kötvényesítési idõ beérkezéstõl menesztésig a teljes havi menesztett állományon
+```{r fig.width=10}
+# Fetch data
+t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
+# Plot
+plot1 <- ggplot(t_page1, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ ., scales = "free", space = "fixed") +
+  geom_line(
+    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.85),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text.y = element_text(size = 10) 
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt1 <- ggplot_gtable(ggplot_build(plot1))
+gt1$heights[8] <- 0.5 * gt1$heights[8]
+grid.draw(gt1)
 ```
 
 
 
-Sikerarány {.storyboard data-navmenu="Tartalom"}
+Teljes folyamat {.storyboard}
 =========================================
 
-### Ezen az ábrán automatikus kötvényesítés sikerességét a **teljes állományon** értékeljük ki több mutató mentén 
+### Ezen az ábrán külön mutatjuk meg az **automatikus** és a **manuális** folyamat fõ teljesítménymutatóit 
 
 ```{r, fig.width=10}
+# Fetch data
+t_page2_1 <- read.csv(here::here("Data", "t_page2_1.csv"), stringsAsFactors = FALSE)
 
+# Plot
+plot2_1 <- ggplot(t_page2_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ UW_TIP, scales = "free", space = "fixed") +
+  geom_line(
+    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page2_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.85),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt2_1 <- ggplot_gtable(ggplot_build(plot2_1))
+gt2_1$heights[9] <- 0.5 * gt2_1$heights[9]
+grid.draw(gt2_1)
 ```
 
 ***
-Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+* Az **automatikus kötvényesítés** az emberi munkavégzés nélküli, számítógépes algoritmusokkal történõ ajánlat feldolgozást jelenti
+    + átfutási idõ szempontból a legoptimálisabb
+    + sikeraránya kritikusan befolyásolja a manuális folyamatág volumenterhelését (errõl részletes havi elemzés ugyancsak elérhetõ az AC-ben)
+* A **manuális kötvényesítés** az AFC core folyamata, ahol az ajánlatok kötvényesítése két kezelési ágon történhet meg:
+    + Happy flow: az ajánlat **megszakítás nélkül** halad keresztül a folyamaton, hiánypótlás, hibakezelés nem szükséges (alapfolyamat)
+    + Hibaág: az ajánlat feldolgozását meg kell szakítani és **csak külsõ input beérkezése esetén folytatható**, tipikusan hiánypótlás, hibakezelés (exception flow)
 
-- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
-- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
-- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés  ### Ezen az ábrán automatikus kötvényesítés sikerességét **termékcsoportonként** értékeljük ki több mutató mentén  ```{r, fig.width=12, fig.height=6}
 
 
-***
-Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+### Ezen az ábrán külön mutatjuk meg a **happy flow (alapfolyamat)** és a **hibaág** teljesítménymutatóit 
 
-- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
-- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
-- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
+```{r, fig.width=10}
+# Fetch data
+t_page2_3 <- read.csv(here::here("Data", "t_page2_3.csv"), stringsAsFactors = FALSE)
 
-### Ezen az ábrán automatikus kötvényesítés sikerességét **termékcsoportonként** és **kötési módonként** értékeljük ki több mutató mentén
+# Plot
+plot2_3 <- ggplot(t_page2_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
+  geom_line(
+    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page2_3, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
 
-```{r, fig.width=12, fig.height=6}
-
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt2_3 <- ggplot_gtable(ggplot_build(plot2_3))
+gt2_3$heights[9] <- 0.5 * gt2_3$heights[9]
+grid.draw(gt2_3)
 ```
 
 ***
-Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
+* Happy flow: az ajánlat **megszakítás nélkül** halad keresztül a folyamaton, hiánypótlás, hibakezelés nem szükséges
+    + az automatikus kötvényesítési ág teljes egészében ide tartozik
+    + a manuális kötvényesítési ág azon része tartozik ide, ahol a folymatot nem kell megszakítani
+* Hibaág: az ajánlat feldolgozását meg kell szakítani és **csak külsõ input beérkezése esetén folytatható**, tipikusan hiánypótlás, hibakezelés (exception flow)
 
-- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
-- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
-- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
 
-### Ezen az ábrán automatikus kötvényesítés sikerességét a **KGFB** termékcsoporton és annak **kötési okaiként** értékeljük ki több mutató mentén
+### Ezen az ábrán külön mutatjuk meg a négy fõ **termékvonal** teljesítménymutatóit 
 
-```{r, fig.width=12, fig.height=6}
+```{r, fig.width=10}
+# Fetch data
+t_page2_2 <- read.csv(here::here("Data", "t_page2_2.csv"), stringsAsFactors = FALSE)
 
+# Plot
+plot2_2 <- ggplot(t_page2_2, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed") +
+  geom_line(
+    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page2_2, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt2_2 <- ggplot_gtable(ggplot_build(plot2_2))
+gt2_2$heights[9] <- 0.5 * gt2_2$heights[9]
+grid.draw(gt2_2)
 ```
 
 ***
-Az automatiks kötvényesítés teljesítményét három mutató alapján értékelhetjük:
-
-- **KISERELT**: a kísérlet, próbálkozás aránya, azaz az állomány mekkora hányadán futtott az adott idõszakban automatikus menesztés
-- **SIKER_PER_KISERELT**: sikerarány azon állományon, melyet az automatika megkísérelt elmeneszteni (magyarul, ahol futott központi menesztés)
-- **SIKER_PER_TELJES**: sikerarány a teljes állományon, tehát azt a halmazt is számításba véve, ahol nem fut központi menesztés
+* A termékcsoportok között jelentõs különbségek tapasztalhatók, mind a feldolgozott volumen, mind a kötvényesítés átfutási idejének szempontjából
+* A Casco és Élet módoztok tipukusan lasabban kötvényesíthetõk, mint a Lakás  és GFB termékek
 
 
 
-Hibaokok {.storyboard data-navmenu="Tartalom"}
+Manuális folyamat {.storyboard}
 =========================================
 
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibaokok relatív gyakoriságát mutatjuk meg a **teljes állományon** 
+### Ezen az ábrán külön mutatjuk meg a **happy flow (alapfolyamat)** és a **hibaág** teljesítménymutatóit csak a manuális folyamaton belül (AFC core folyamat)
 
-```{r, fig.width=14, fig.height=6}
+```{r, fig.width=10}
+# Fetch data
+t_page3_1 <- read.csv(here::here("Data", "t_page3_1.csv"), stringsAsFactors = FALSE)
+
+# Plot
+plot3_1 <- ggplot(t_page3_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
+  geom_line(
+    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page3_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt3_1 <- ggplot_gtable(ggplot_build(plot3_1))
+gt3_1$heights[9] <- 0.5 * gt3_1$heights[9]
+grid.draw(gt3_1)
 
 ```
 
 ***
-* A hibaok relatív gyakorisága azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy hibaok az összes hibaok mekkora hányadát tette ki, vagyis relatíve mennyire nagy a súlya
-* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ okokat figyelhetünk meg, ezért fontos a hibaokokat termékenként értelmezni (lásd. következõ dia)
+* Az AFC core folyamata két volumenben és feldolgozási sebességben jeltõsen eltérõ szegmensbõl áll
+    + az állomány 80%-át kitevõ happy flow-ban az AFC néhány napos átfutási idõt 
 
 
 ### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibaokok relatív gyakoriságát mutatjuk meg **termékcsoportonként** 
@@ -160,84 +310,3 @@ Hibaokok {.storyboard data-navmenu="Tartalom"}
 * Egy adott hibaok gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hiba egyre gyakoribb, vagy egyre ritkább elõfordulását
 * A pontos beavatkozási területek meghatározásához ugyanakkor nem elegendõ a hibaokok külön-külön vizsgálata, hanem az egymással együtt elõforduló *mintázatok* vizsgálata szükséges
 
-
-
-
-Hibamintázatok {.storyboard data-navmenu="Tartalom"}
-=========================================
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok relatív gyakoriságát mutatjuk meg a **teljes állományon** 
-
-```{r, fig.width=14, fig.height=6}
-
-```
-
-***
-* A hibamintázat együttesen elõforduló hibaokok láncolatát jelenti
-* A hibamintázat pontosabb képet ad arról, hogy az automatikus menesztés miért vallott kudarcot
-* Az egy mintázaton belüli különbözõ hibaokokat három csillag (***) választja el egymástól
-* Vannak mintázatok, melyek mindössze egyetlen okból állnak
-* A hibamintázat relatív gyakorisága azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy mintázat az összes mintázat mekkora hányadát tette ki, vagyis relatíve mennyire nagy a súlya
-* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ mintázatokat figyelhetünk meg, ezért fontos a mintázatokat termékenként értelmezni (lásd. következõ dia)
-
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok relatív gyakoriságát mutatjuk meg **termékcsoportonként** 
-
-```{r, fig.width=14, fig.height=6}
-
-```
-
-***
-* A hibamintázat együttesen elõforduló hibaokok láncolatát jelenti
-* A hibamintázat pontosabb képet ad arról, hogy az automatikus menesztés miért vallott kudarcot
-* Vannak mintázatok, melyek mindössze egyetlen okból állnak
-* A hibamintázat relatív gyakorisága a termékcsoporton belülazt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy mintázat a termékcsport esetében megfigyelt összes mintázat mekkora hányadát tette ki, vagyis relatíve mennyire nagy a  termékcsoporton belüli súlya
-* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ mintázatokat figyelhetünk meg, ezért fontos a mintázatokat termékenként értelmezni
-
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibamintázat gyakoriságának idõbeli alakulását** mutatjuk meg **a KGFB termékcsoportban** 
-
-```{r, fig.width=14, fig.height=8}
-
-```
-
-***
-* Egy adott hibamintázat gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hibák egyre gyakoribb, vagy egyre ritkább elõfordulását
-
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a Lakás termékcsoportban** 
-
-```{r, fig.width=14, fig.height=8}
-
-```
-
-***
-* Egy adott hibamintázat gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hibák egyre gyakoribb, vagy egyre ritkább elõfordulását
-
-
-
-Költségek {.storyboard data-navmenu="Tartalom"}
-=========================================
-
-### Ezen az ábrán az automatikus kötvényesítés hibaágának manuális utókezelésének költségeit mutatjuk meg **termékcsoportonként** idõben
-
-```{r, fig.width=12, fig.height=6}
-
-```
-
-***
-* Az automatikus kötvényesítés hibára futása esetén az ajánlatot manuálisan kell feldolgozni
-* A workflow rendszer (Kontakt) minden manuális tevékenységet tárol, így ponosan kiszámolható a hibaág kezelésének FTE igénye
-* Az FTE igény nem egyenlõ a létszámigénnyel, mivel az FTE a tiszta munkaidõigényt mutatja és nem számol a betegségek és szabadságok hatásával
-* A létszámigény meghatározásához az FTE igény +25%-os korrekciója az iparági sztenderd
-* A sikerarány és a manuális munka FTE költség negatív korrelációja jól látható az ábrán: ha a sikerarány csökken, az FTE igény nõ
-
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibamintázatok havi FTE igényét mutatjuk meg **termékcsoportonként**
-
-```{r, fig.width=14, fig.height=6}
-
-```
-
-***
-* A termékcsoportonkénti hiba mintázatok FTE igénye megmutatja a vállalat számára legköltségesebb hibadimenziókat és segít a további optimalizáció irányának kijelölésében

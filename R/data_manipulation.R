@@ -19,3 +19,29 @@ gen_aggregate <- function(df, ...) {
     ))
   return(t_grouped)
 }
+
+
+gen_aggregate_cost <- function(df, df_wdays, ...){
+  # Returns aggregated cost computations fit for plotting in a faceted way
+  t_grouped <- df %>%
+    filter(UW_TIP == "Manuális kötvényesítés") %>%
+    group_by_(...) %>%
+    summarise(
+      SUM_EMBERNAP = sum(FELDOLG_IDO_PERC) / 60 / 7,
+      VOLUMEN = length(VONALKOD)
+    ) %>%
+    left_join(df_wdays %>% select(IDOSZAK, MNAP), by = "IDOSZAK") %>%
+    mutate(
+      FTE := SUM_EMBERNAP / MNAP,
+      FAJL_FTE := FTE / VOLUMEN * 1000
+    ) %>%
+    ungroup() %>%
+    gather_(
+      key_col = "MUTATÓ",
+      value_col = "ÉRTÉK",
+      gather_cols = c("FTE", "FAJL_FTE", "VOLUMEN")
+    ) %>%
+    mutate(MUTATÓ := case_when(.$MUTATÓ == "FTE" ~ "Erõforrásigény [FTE]",
+                              .$MUTATÓ == "FAJL_FTE" ~ "Hatékonyság [fajlagos FTE]",
+                              TRUE ~ "Volumen [db]"))
+}

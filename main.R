@@ -101,34 +101,7 @@ t_uw <- t_uw %>% mutate(FELDOLG_AG = case_when(
 
 # Gen data
 t_page1 <- gen_aggregate(t_uw, "IDOSZAK")
-
-# Plot
-plot1 <- ggplot(t_page1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ ., scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt1 <- ggplot_gtable(ggplot_build(plot1))
-gt1$heights[8] <- 0.5 * gt1$heights[8]
-grid.draw(gt1)
+write.csv(t_page1, here::here("Data", "t_page1.csv"), row.names = FALSE)
 
 
 # Page2 ---------------------------------------------------------------------------------
@@ -140,34 +113,7 @@ grid.draw(gt1)
 
 # Gen data
 t_page2_1 <- gen_aggregate(t_uw, "IDOSZAK", "UW_TIP")
-
-# Plot
-plot2_1 <- ggplot(t_page2_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ UW_TIP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_1 <- ggplot_gtable(ggplot_build(plot2_2))
-gt2_1$heights[9] <- 0.5 * gt2_1$heights[9]
-grid.draw(gt2_1)
+write.csv(t_page2_1, here::here("Data", "t_page2_1.csv"), row.names = FALSE)
 
 
 # Page2_2 ---------------------------------------------------------------------------------
@@ -175,34 +121,7 @@ grid.draw(gt2_1)
 
 # Gen data
 t_page2_2 <- gen_aggregate(t_uw, "IDOSZAK", "TERMCSOP")
-
-# Plot
-plot2_2 <- ggplot(t_page2_2, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_2, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_2 <- ggplot_gtable(ggplot_build(plot2_2))
-gt2_2$heights[9] <- 0.5 * gt2_2$heights[9]
-grid.draw(gt2_2)
+write.csv(t_page2_2, here::here("Data", "t_page2_2.csv"), row.names = FALSE)
 
 
 # Page2_3 ---------------------------------------------------------------------------------
@@ -210,100 +129,8 @@ grid.draw(gt2_2)
 
 # Gen data
 t_page2_3 <- gen_aggregate(t_uw, "IDOSZAK", "FELDOLG_AG")
+write.csv(t_page2_3, here::here("Data", "t_page2_3.csv"), row.names = FALSE)
 
-# Plot
-plot2_3 <- ggplot(t_page2_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_3, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_3 <- ggplot_gtable(ggplot_build(plot2_3))
-gt2_3$heights[9] <- 0.5 * gt2_3$heights[9]
-grid.draw(gt2_3)
-
-
-# Page2_4 ---------------------------------------------------------------------------------
-# Total lead time with total volumes broken down by process flow & product
-
-# Gen data
-t_page2_4 <- gen_aggregate(t_uw, "IDOSZAK", "UW_TIP", "TERMCSOP")
-
-# Plot
-plot2_4_1 <- ggplot(t_page2_4 %>% filter(UW_TIP == 'Automatikus kötvényesítés'), aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_4 %>% filter(UW_TIP == 'Automatikus kötvényesítés'), DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_4 %>% filter(UW_TIP == 'Automatikus kötvényesítés'), DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_4 %>% filter(UW_TIP == 'Automatikus kötvényesítés'), DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.9, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  ggtitle("Automatikus kötvényesítés: termékcsoportok")
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_4_1 <- ggplot_gtable(ggplot_build(plot2_4_1))
-gt2_4_1$heights[9] <- 0.5 * gt2_4_1$heights[9]
-grid.draw(gt2_4_1)
-
-
-# Plot
-plot2_4_2 <- ggplot(t_page2_4 %>% filter(UW_TIP != 'Automatikus kötvényesítés'), aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_4 %>% filter(UW_TIP != 'Automatikus kötvényesítés'), DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_4 %>% filter(UW_TIP != 'Automatikus kötvényesítés'), DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_4 %>% filter(UW_TIP != 'Automatikus kötvényesítés'), DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  ggtitle("Manuális kötvényesítés: termékcsoportok")
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_4_2 <- ggplot_gtable(ggplot_build(plot2_4_2))
-gt2_4_2$heights[9] <- 0.5 * gt2_4_2$heights[9]
-grid.draw(gt2_4_2)
 
 
 # Page3 ---------------------------------------------------------------------------------
@@ -314,34 +141,7 @@ grid.draw(gt2_4_2)
 
 # Gen data
 t_page3_1 <- gen_aggregate(t_uw %>% filter(UW_TIP == 'Manuális kötvényesítés'), "IDOSZAK", "FELDOLG_AG")
-
-# Plot
-plot3_1 <- ggplot(t_page3_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page3_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt3_1 <- ggplot_gtable(ggplot_build(plot3_1))
-gt3_1$heights[9] <- 0.5 * gt3_1$heights[9]
-grid.draw(gt3_1)
+write.csv(t_page3_1, here::here("Data", "t_page3_1.csv"), row.names = FALSE)
 
 
 
@@ -386,23 +186,121 @@ grid.draw(gt3_2)
 # Manual process costs and efficiency
 
 # Gen data
-t_page3_3 <- t_uw %>%
-  filter(UW_TIP == "Manuális kötvényesítés") %>%
-  group_by(IDOSZAK) %>%
-  summarise(
-    SUM_EMBERNAP = sum(FELDOLG_IDO_PERC) / 60 / 7,
-    VOLUMEN = length(VONALKOD)
-  ) %>%
-  left_join(t_mnap %>% select(IDOSZAK, MNAP), by = "IDOSZAK") %>%
-  mutate(
-    FTE = SUM_EMBERNAP / MNAP,
-    FAJL_FTE = FTE / VOLUMEN * 1000
-  ) %>% 
-  ungroup() %>% 
-  select(IDOSZAK, FTE, FAJL_FTE, VOLUMEN) %>% 
-  gather(MUTATÓ, ÉRTÉK, -IDOSZAK) %>% 
-  mutate(MUTATÓ = case_when(.$MUTATÓ == "FTE" ~ "Erõforrásigény [FTE]",
-                            .$MUTATÓ == "FAJL_FTE" ~ "Hatékonyság [fajlagos FTE]",
-                            TRUE ~ "Volumen [db]"))
+t_page3_3 <- gen_aggregate_cost(t_uw, t_mnap, "IDOSZAK")
+
+# Plot
+ggplot(t_page3_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~., scales = "free") +
+  geom_line(
+    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_3, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+  
+
+# Page3_4 ---------------------------------------------------------------------------------
+# Manual process costs and efficiency by product line
+
+# Gen data
+t_page3_4 <- gen_aggregate_cost(t_uw, t_mnap, "IDOSZAK", "TERMCSOP")
+
+# Plot
+ggplot(t_page3_4, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~TERMCSOP, scales = "free") +
+  geom_line(
+    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_4, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
 
 
+# Page3_5 ---------------------------------------------------------------------------------
+# Manual process costs and efficiency by product line & process flow
+
+# Gen data
+t_page3_5 <- gen_aggregate_cost(t_uw, t_mnap, "IDOSZAK", "TERMCSOP", "FELDOLG_AG") %>% 
+                mutate(SZEGMENS = paste0(FELDOLG_AG, '::', TERMCSOP))
+
+# Plot
+ggplot(t_page3_5, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~SZEGMENS, scales = "free") +
+  geom_line(
+    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_5, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
