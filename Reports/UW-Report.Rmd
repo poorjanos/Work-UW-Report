@@ -1,5 +1,5 @@
 ---
-title: "AFC kötvényesítés havi riport"
+title: "Ajánlat feldolgozás::beérkezéstõl menesztésig havi riport"
 output: 
   flexdashboard::flex_dashboard:
     orientation: row
@@ -237,7 +237,7 @@ grid.draw(gt2_2)
 Manuális folyamat {.storyboard}
 =========================================
 
-### Ezen az ábrán külön mutatjuk meg a **happy flow (alapfolyamat)** és a **hibaág** teljesítménymutatóit csak a manuális folyamaton belül (AFC core folyamat)
+### Ezen az ábrán külön mutatjuk meg a **happy flow (alapfolyamat)** és a **hibaág** teljesítménymutatóit csak a **manuális** folyamaton belül (AFC)
 
 ```{r, fig.width=10}
 # Fetch data
@@ -270,43 +270,192 @@ plot3_1 <- ggplot(t_page3_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
 gt3_1 <- ggplot_gtable(ggplot_build(plot3_1))
 gt3_1$heights[9] <- 0.5 * gt3_1$heights[9]
 grid.draw(gt3_1)
-
 ```
 
 ***
 * Az AFC core folyamata két volumenben és feldolgozási sebességben jeltõsen eltérõ szegmensbõl áll
-    + az állomány 80%-át kitevõ happy flow-ban az AFC néhány napos átfutási idõt 
+    + az állomány **80%-át** kitevõ happy flow-ban az AFC **kétszer olyan gyorsan** dolgozik, mint a **20%-ot** kitevõ hibaágon
+    + a hibaágon kezelt ajánlatok esetében az AFC-nek várakoznia kell addig, amíg a hiányzó adat pótlásra, vagy a hibás adat javításra kerül (külsõ inputra várakozás)
 
 
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult hibaokok relatív gyakoriságát mutatjuk meg **termékcsoportonként** 
+### Ezen az ábrán **termékcsoportonként** mutatjuk meg a **happy flow (alapfolyamat)** és a **hibaág** teljesítménymutatóit csak a **manuális** folyamaton belül (AFC)
 
-```{r, fig.width=14, fig.height=6}
+```{r, fig.width=10}
+# Fetch data
+t_page3_2 <- read.csv(here::here("Data", "t_page3_2.csv"), stringsAsFactors = FALSE)
+
+# Plot
+plot3_2 <- ggplot(t_page3_2, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ SZEGMENS, scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = subset(t_page3_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(t_page3_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(t_page3_2, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt3_2 <- ggplot_gtable(ggplot_build(plot3_2))
+gt3_2$heights[9] <- 0.5 * gt3_2$heights[9]
+grid.draw(gt3_2)
+```
+
+***
+* A termékcsoportok között jelentõs különbség mutatkozik aszerint, hogy alap-, vagy hibaágon kerülnek kezelésre
+* A leglassabb feldolgozás a GFB és az ÉLET módozatok hibaágán tapasztalható
+
+
+### Ezen az ábrán a **manuális** feldolgozás (AFC) **erõforrásigényét** és **hatékonyságát** mutatjuk meg
+
+```{r, fig.width=10}
+# Fetch data
+t_page3_3 <- read.csv(here::here("Data", "t_page3_3.csv"), stringsAsFactors = FALSE)
+
+# Plot
+ggplot(t_page3_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~., scales = "free", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_3, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+```
+
+***
+* **Erõforrásigény:** adott idõszakban a feldolgozásban felhasznált teljes FTE (full-time equivalent = teljes állásban foglalkoztatott dolgozó)
+    + az FTE érték nem egyenlõ a létszámszükséglettel, a szükséges nettó munkaerõt jelöli
+    + a létszámigény számításához az FTE-t 1,3-as korrekciós együtthatóval kell szorozni, hogy megkapjuk a betegségek és szabadságok miatt kiesõ erõforrás pótlásának szükségletét is
+* **Hatékonyság:** 1000 tétel menesztéséhez szükséges FTE, tehát az erõforrásigény darabszámmal normált (fajlagosított) értéke; megmutatja az összehasonlított dimenziók egymáshoz képesti erõforrásigényét, tehát a feldolgozás hatékonyságát
+
+
+### Ezen az ábrán a **manuális** feldolgozás (AFC) **erõforrásigényét** és **hatékonyságát** mutatjuk meg **termékcsoportonként**
+
+```{r, fig.width=10}
+# Fetch data
+t_page3_4 <- read.csv(here::here("Data", "t_page3_4.csv"), stringsAsFactors = FALSE)
+
+# Plot
+ggplot(t_page3_4, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~TERMCSOP, scales = "free", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_4, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
 
 ```
 
 ***
-* A hibaok relatív gyakorisága a **termékcsopoton belül** azt jelenti, hogy a vizsgált idõszakban (jelen esetben a legutolsó 3 hónapban) egy hibaok a **termékcsoport esetében számolt** összes hibaok mekkora hányadát tette ki, vagyis relatíve mennyire nagy a termékcsoporton belüli súlya
-* A teljes állományon számolt arányokon túl termékcsoportonként jelentõsen eltérõ okokat figyelhetünk meg, ezért fontos a hibaokokat termékenként értelmezni
-* Megfigyelhetõ, hogy a termékcsoportokra más-más hibaokok jellemzõek, jóllehet néhány esetében közös elõforduás is tapasztalható
+* Az erõforrásigény összefügg a feldolgozott volumennel: nagyobb volumen nagyobb FTE igénnyel jár
+* A termékcsoportok azonban jelentõsen eltérnek a hatékonyság tekintetében: az ÉLET módózatok lényegesen rosszabb erõforráshatékonysággal dolgozhatók fel, mint a nem-ÉLET módozatok
 
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a KGFB termékcsoportban** 
 
-```{r, fig.width=14, fig.height=8}
+### Ezen az ábrán a **manuális** feldolgozás (AFC) **erõforrásigényét** és **hatékonyságát** mutatjuk meg **termékcsoportonként** és **folyamatáganként**
+
+```{r, fig.width=10}
+# Fetch data
+t_page3_5 <- read.csv(here::here("Data", "t_page3_5.csv"), stringsAsFactors = FALSE)
+
+# Plot
+ggplot(t_page3_5, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(MUTATÓ~SZEGMENS, scales = "free", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_point(
+    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
+    aes(group = 1),
+    colour = "#619CFF"
+  ) +
+  geom_line(
+    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_point(
+    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
+    aes(group = 1),
+    colour = "#F8766D"
+  ) +
+  geom_bar(data = filter(t_page3_5, MUTATÓ == "Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    legend.position = c(0.1, 0.9),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
 
 ```
 
 ***
-* Egy adott hibaok gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hiba egyre gyakoribb, vagy egyre ritkább elõfordulását
-* A pontos beavatkozási területek meghatározásához ugyanakkor nem elegendõ a hibaokok külön-külön vizsgálata, hanem az egymással együtt elõforduló *mintázatok* vizsgálata szükséges
-
-
-### Ezen az ábrán az elmúlt 3 hónapban legtöbbször elõfordult **hibaokok gyakoriságának idõbeli alakulását** mutatjuk meg **a Lakás termékcsoportban** 
-
-```{r, fig.width=14, fig.height=8}
-
-```
-
-***
-* Egy adott hibaok gyakoriságának idõbeli alakulásából következtetni lehet olyan eseményekre, melyek befolyásolhatták egy adott hiba egyre gyakoribb, vagy egyre ritkább elõfordulását
-* A pontos beavatkozási területek meghatározásához ugyanakkor nem elegendõ a hibaokok külön-külön vizsgálata, hanem az egymással együtt elõforduló *mintázatok* vizsgálata szükséges
+* A manuális ágon a legrosszabb hatékonyságot az ÉLET módozatok hibaágán tapasztaljuk
+* A nagy volumenterhelésû szegmensekben (LAKÁS és GFB alapág) dolgozik az AFC a legjobb hatékonysággal
 

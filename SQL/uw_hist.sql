@@ -51,8 +51,8 @@ AS
                AS kimenet,
             szerzdat - erkdat - bnap_db@dl_peep (szerzdat, erkdat)
                AS ERK_SZERZ
-     FROM   pss_201803_kieg@dl_peep a
-    WHERE   TRUNC (szerzdat, 'mm') >= DATE '2018-03-01';
+     FROM   pss_201710_kieg@dl_peep a
+    WHERE   TRUNC (szerzdat, 'mm') >= DATE '2017-10-01';
 COMMIT;
 
 DROP TABLE t_uw_kontakt_helper;
@@ -132,7 +132,8 @@ COMMIT;
 
 
 
---INSERT INTO t_uw_history (vonalkod,
+--INSERT INTO t_uw_history (idoszak,
+--                          vonalkod,
 --                          szerzazon,
 --                          modkod,
 --                          ugynokkod,
