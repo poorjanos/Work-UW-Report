@@ -6,6 +6,7 @@ library(ggplot2)
 library(tidyr)
 library(scales)
 library(grid)
+library(stringr)
 
 # Create dirs (dir.create() does not crash when dir already exists)
 dir.create(here::here("Data"), showWarnings = FALSE)
@@ -54,7 +55,7 @@ jdbcConnection <-
   )
 
 # Fetch data
-query_uw_data <- "select * from t_uw_history where elutdat is null and stornodat is null"
+query_uw_data <- "select * from t_uw_history_r"
 t_uw <- dbGetQuery(jdbcConnection, query_uw_data)
 
 # Close db connection: kontakt
@@ -95,6 +96,9 @@ t_uw <- t_uw %>% mutate(FELDOLG_AG = case_when(
 # Data Aggregation ######################################################################
 #########################################################################################
 
+
+
+# AFC Report ---------------------------------------------------------------------------
 
 # Page1 ---------------------------------------------------------------------------------
 # Total lead time with total volumes
@@ -178,4 +182,104 @@ write.csv(t_page3_4, here::here("Data", "t_page3_4.csv"), row.names = FALSE)
 t_page3_5 <- gen_aggregate_cost(t_uw, t_mnap, "IDOSZAK", "TERMCSOP", "FELDOLG_AG") %>% 
                 mutate(SZEGMENS = paste0(FELDOLG_AG, '::', TERMCSOP))
 write.csv(t_page3_5, here::here("Data", "t_page3_5.csv"), row.names = FALSE)
+
+
+
+
+# Sales Report -----------------------------------------------------------------------------
+s_page1 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK")
+
+# Plot
+s_plot1 <- ggplot(s_page1, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ ., scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = subset(s_page1, DIMENZIÓ == "Aláír-kötv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page1, DIMENZIÓ == "Aláír-kötv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_line(
+    data = subset(s_page1, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page1, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_line(
+    data = subset(s_page1, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page1, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(s_page1, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    #legend.position = c(0.1, 0.85),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text.y = element_text(size = 10) 
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt1 <- ggplot_gtable(ggplot_build(plot1))
+gt1$heights[8] <- 0.5 * gt1$heights[8]
+grid.draw(gt1)
+
+s_page2 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP")
+
+# Plot
+s_plot2 <- ggplot(s_page2, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
+  geom_line(
+    data = subset(s_page2, DIMENZIÓ == "Aláír-kötv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page2, DIMENZIÓ == "Aláír-kötv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_line(
+    data = subset(s_page2, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page2, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_line(
+    data = subset(s_page2, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_point(
+    data = subset(s_page2, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
+    aes(group = MUTATÓ, colour = MUTATÓ)
+  ) +
+  geom_bar(data = subset(s_page2, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity") +
+  labs(
+    y = "Értékek",
+    x = "Idõszak",
+    colour = "Mutató"
+  ) +
+  theme(
+    #legend.position = c(0.1, 0.85),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text.y = element_text(size = 10) 
+  )
+
+# Adjust facet sizes manually
+# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+gt1 <- ggplot_gtable(ggplot_build(plot1))
+gt1$heights[8] <- 0.5 * gt1$heights[8]
+grid.draw(gt1)
 

@@ -1,3 +1,9 @@
+readQuery <-
+  # Read sql file
+  function(file)
+    paste(readLines(file, warn = FALSE), collapse = "\n")
+
+
 gen_aggregate <- function(df, ...) {
   # Returns aggregated df fit for plotting in a faceted way
   t_grouped <- df %>%
@@ -44,4 +50,42 @@ gen_aggregate_cost <- function(df, df_wdays, ...){
     mutate(MUTATÓ := case_when(.$MUTATÓ == "FTE" ~ "Erõforrásigény [FTE]",
                               .$MUTATÓ == "FAJL_FTE" ~ "Hatékonyság [fajlagos FTE]",
                               TRUE ~ "Volumen [db]"))
+}
+
+
+gen_aggregate_sales <- function(df, ...) {
+  # Returns aggregated df fit for plotting in a faceted way (sales)
+  t_grouped <- df %>%
+    group_by_(...) %>%
+    summarize(
+      ALIR_SZERZ_ÁTLAG = mean(ALIR_SZERZ_NNAP, na.rm = TRUE),
+      ALIR_SZERZ_MEDIÁN = median(ALIR_SZERZ_NNAP, na.rm = TRUE),
+      SZERZ_DIJKONYV_ÁTLAG = mean(SZERZ_DIJKONYV_NNAP, na.rm = TRUE),
+      SZERZ_DIJKONYV_MEDIÁN = median(SZERZ_DIJKONYV_NNAP, na.rm = TRUE),
+      SZERZ_DIJBEFIZ_ÁTLAG = mean(SZERZ_DIJBEFIZ_NNAP, na.rm = TRUE),
+      SZERZ_DIJBEFIZ_MEDIÁN = median(SZERZ_DIJBEFIZ_NNAP, na.rm = TRUE),
+      VOLUMEN = length(VONALKOD)
+    ) %>%
+    gather_(
+      key_col = "MUTATÓ",
+      value_col = "ÉRTÉK",
+      gather_cols = c(
+        "ALIR_SZERZ_ÁTLAG", "ALIR_SZERZ_MEDIÁN", "SZERZ_DIJKONYV_ÁTLAG",
+        "SZERZ_DIJKONYV_MEDIÁN", "SZERZ_DIJBEFIZ_ÁTLAG", "SZERZ_DIJBEFIZ_MEDIÁN",
+        "VOLUMEN"
+      )
+    ) %>%
+    ungroup() %>%
+    mutate(DIMENZIÓ := case_when(
+      .$MUTATÓ %in% c("ALIR_SZERZ_ÁTLAG", "ALIR_SZERZ_MEDIÁN") ~ "Aláír-kötv [nnap]",
+      .$MUTATÓ %in% c("SZERZ_DIJKONYV_ÁTLAG", "SZERZ_DIJKONYV_MEDIÁN") ~ "Kötv-díjkönyv [nnap]",
+      .$MUTATÓ %in% c("SZERZ_DIJBEFIZ_ÁTLAG", "SZERZ_DIJBEFIZ_MEDIÁN") ~ "TÁJ: Kötv-díjbefiz [nnap]",
+      TRUE ~ "TÁJ: Volumen [db]"
+    )) %>%
+    mutate(MUTATÓ := case_when(
+      stringr::str_detect(.$MUTATÓ, "ÁTLAG") ~ "ÁTLAG",
+      stringr::str_detect(.$MUTATÓ, "MEDIÁN") ~ "MEDIÁN",
+      TRUE ~ .$MUTATÓ
+    ))
+  return(t_grouped)
 }
