@@ -1,0 +1,89 @@
+---
+title: "Hálózat: ajánlat feldolgozás fõbb mutatói"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(scales)
+library(grid)
+library(here)
+library(ggplot2)
+library(knitr)
+
+# Import helper functions
+source(here::here("R", "data_manipulation.R"), local = TRUE)
+```
+
+
+Áttekintés
+===================================== 
+
+Column {.sidebar data-width=450}
+-------------------------------------
+
+### Mérõszámok értelmezése
+
+* A jutalékfzetésez szükséges feltételek idõbeli teljesülését az alábbi mérõszámok mutatják meg:
+    + **1. Aláír-kötv [mnap]**: az ajánlat aláírásázól a kötvényesítésig eltelt munkanapok száma
+    + **2. Kötv-díjkönyv [mnap]**: az ajánlat kötvényesítésétõl az elsõ díj lekönyveléséig eltelt munkanapok száma
+* A mutatók értelmezéshez két tájékozató adatot is tartalmaz a diagram:
+    + **TÁJ: Kötv-díjbefiz [mnap]**: az ajánlat kötvényesítésétõl az elsõ díj befizetéséig eltelt munkanapok száma
+    + **TÁJ: Volumen [mnap]**: idõszakban menesztett hálózat által szerzett ajánlatok darabszáma
+* **Értelmezés**:
+    + A kötvényesítés és az elsõ díj könyvelése között eltelt idõt befolyásolja, hogy a **díj mikor érkezik be** a kötvényesítéshez képest
+    + A kötvényesítés és díjbefizetés között eltelt munkanapok számából (alulról a második tájékoztató grafikon) látszik, hogy míg az **állomány fele esetében a díj már beérkezett a kötvényesítés idõpontjában** (medián 0 értéke), addig az **állomány másik felében a díj csak napokkal a kötvényesítés után kerül befizetésre**
+    + A díj befizetése után átlagosan 4 munkanap telik el, míg beérkezik a díjszámlára
+
+
+Column {data-width=550}
+-------------------------------------
+### Ajánlat feldolgozás átfutási idõk és volumen
+```{r fig.width=7}
+# Fetch data
+s_page5 <- read.csv(here::here("Data", "s_page5.csv"), stringsAsFactors = FALSE)
+
+# Plot
+gen_plot_sales_tied(s_page5)
+```
+
+
+
+Termékbontás
+===================================== 
+
+Column {.sidebar data-width=450}
+-------------------------------------
+
+### Elemzés
+
+* A termékcsoportok között **jelentõs különbség** mutatkozik aszerint, hogy a díj a kötvényesítés elõtt, vagy azt követõen kerül befizetésre
+* A díj kötvényesítéshez képest eltérõ befizetési idejét befolyásolja, hogy
+    + egyes termékeket (Lakás, GFB) tipusan gyorsabban lehet kötvénysíteni, mint másokat,
+    + másrészt termékcsoportonként jelentõsen eltér, hogy a díjat az aláírást követõen mikor fizetik be (átlag/medián értékek):
+        + Casco: 11/2 mnap
+        + GFB: 11/2 mnap
+        + Lakás: 18/3 mnap
+        + Élet: 5/1 mnap
+    + Casco és Élet termékek esetében a díj emiatt az esetek többségében a kötvényesítés elõtt már befizetésre kerül (Kötv-díjbefiz 0 vagy negatív értéke)
+    + Lakás és GFB termékek esetében azonban gyakori, hogy a díj csak a kötvényesítés után kerül befizetésre (majd még átlagosan 4 napig tart míg beérkezik a díjszámlára) 
+* **Konklúzió #1**: Élet termékek esetében a kötvényesítési folyamat felgyorsítása eredményezheti a gyorsabb jutalékfizetést, melyet az értékesítõ a hibátlan és határidõre történõ ajánlati dokumentáció beküldésével támogathat
+* **Konklúzió #2**: Lakás és GFB módozatok esetében ha a díj a jelenleginél korábban kerül befizetésére, akkor hamarabb válik a szerzõdés jutalékéretté 
+
+
+Column {data-width=550}
+-------------------------------------
+### Ajánlat feldolgozás átfutási idõk és volumen
+```{r fig.width=8}
+# Fetch data
+s_page6 <- read.csv(here::here("Data", "s_page6.csv"), stringsAsFactors = FALSE)
+
+# Plot
+gen_plot_sales_tied(s_page6, "TERMCSOP")
+```
+

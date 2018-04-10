@@ -92,6 +92,14 @@ t_uw <- t_uw %>% mutate(FELDOLG_AG = case_when(
   TRUE ~ "Hibaág"
 ))
 
+# Create sales channel var
+# Direkt includes premium as well (A, DS, W, N, E, PR, PS)
+t_uw <- t_uw %>%
+        mutate(ERTCSAT = case_when(.$ERTCSAT %in% c("O", "U", "DU") ~ "Hálózat",
+                                   .$ERTCSAT %in% c("B", "SB", "I", "C") ~ "Alkusz",
+                                   TRUE ~ "Direkt"))
+
+
 #########################################################################################
 # Data Aggregation ######################################################################
 #########################################################################################
@@ -186,100 +194,45 @@ write.csv(t_page3_5, here::here("Data", "t_page3_5.csv"), row.names = FALSE)
 
 
 
-# Sales Report -----------------------------------------------------------------------------
+# Sales Report ----------------------------------------------------------------------------
+
+
+# All channels ----------------------------------------------------------------------------
+# Page 1 ----------------------------------------------------------------------------------
+# Total lead times
 s_page1 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK")
+gen_plot_sales(s_page1)
 
-# Plot
-s_plot1 <- ggplot(s_page1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ ., scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = subset(s_page1, DIMENZIÓ == "Aláír-kötv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page1, DIMENZIÓ == "Aláír-kötv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_line(
-    data = subset(s_page1, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page1, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_line(
-    data = subset(s_page1, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page1, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(s_page1, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    #legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
-    axis.text.y = element_text(size = 10),
-    strip.text.y = element_text(size = 10) 
-  )
 
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt1 <- ggplot_gtable(ggplot_build(plot1))
-gt1$heights[8] <- 0.5 * gt1$heights[8]
-grid.draw(gt1)
-
+# Page 2------------------------------------------------------------------------------------
+# Total lead time with total volumes broken down by product line
 s_page2 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP")
+gen_plot_sales(s_page2, "TERMCSOP")
 
-# Plot
-s_plot2 <- ggplot(s_page2, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = subset(s_page2, DIMENZIÓ == "Aláír-kötv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page2, DIMENZIÓ == "Aláír-kötv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_line(
-    data = subset(s_page2, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page2, DIMENZIÓ == "Kötv-díjkönyv [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_line(
-    data = subset(s_page2, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(s_page2, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [nnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(s_page2, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    #legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
-    axis.text.y = element_text(size = 10),
-    strip.text.y = element_text(size = 10) 
-  )
+# Total lead time with total volumes broken down by sales channel
+s_page3 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "ERTCSAT")
+gen_plot_sales(s_page3, "ERTCSAT")
 
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt1 <- ggplot_gtable(ggplot_build(plot1))
-gt1$heights[8] <- 0.5 * gt1$heights[8]
-grid.draw(gt1)
+# Total lead time with total volumes broken down by sales channel
+s_page4 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")),
+                               "IDOSZAK", "ERTCSAT", "TERMCSOP") %>% 
+            mutate(SZEGMENS = paste0(ERTCSAT, '::', TERMCSOP))
+gen_plot_sales(s_page4, "SZEGMENS")
+
+
+# Channel: tied agents ----------------------------------------------------------------------
+# Page 3 ------------------------------------------------------------------------------------
+# Total lead times
+s_page5 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat" &
+                                                      stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK")
+write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
+
+
+gen_plot_sales_tied(s_page5)
+
+# Total lead time with total volumes broken down by product line
+s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat" &
+                                                      stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP")
+write.csv(s_page6, here::here("Data", "s_page6.csv"), row.names = FALSE)
+gen_plot_sales_tied(s_page6, "TERMCSOP")
 

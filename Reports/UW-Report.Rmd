@@ -14,6 +14,10 @@ library(scales)
 library(grid)
 library(here)
 library(ggplot2)
+library(knitr)
+
+# Import helper functions
+source(here::here("R", "data_manipulation.R"), local = TRUE)
 ```
 
 
@@ -71,34 +75,7 @@ Row {data-height=800}
 t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot1 <- ggplot(t_page1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ ., scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
-    axis.text.y = element_text(size = 10),
-    strip.text.y = element_text(size = 10) 
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt1 <- ggplot_gtable(ggplot_build(plot1))
-gt1$heights[8] <- 0.5 * gt1$heights[8]
-grid.draw(gt1)
+gen_plot_ops(t_page1)
 ```
 
 
@@ -113,32 +90,7 @@ Teljes folyamat {.storyboard}
 t_page2_1 <- read.csv(here::here("Data", "t_page2_1.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot2_1 <- ggplot(t_page2_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ UW_TIP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.85),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_1 <- ggplot_gtable(ggplot_build(plot2_1))
-gt2_1$heights[9] <- 0.5 * gt2_1$heights[9]
-grid.draw(gt2_1)
+gen_plot_ops(t_page2_1, "UW_TIP")
 ```
 
 ***
@@ -158,32 +110,7 @@ grid.draw(gt2_1)
 t_page2_3 <- read.csv(here::here("Data", "t_page2_3.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot2_3 <- ggplot(t_page2_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_3, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_3, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_3 <- ggplot_gtable(ggplot_build(plot2_3))
-gt2_3$heights[9] <- 0.5 * gt2_3$heights[9]
-grid.draw(gt2_3)
+gen_plot_ops(t_page2_3, "FELDOLG_AG")
 ```
 
 ***
@@ -200,32 +127,7 @@ grid.draw(gt2_3)
 t_page2_2 <- read.csv(here::here("Data", "t_page2_2.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot2_2 <- ggplot(t_page2_2, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ TERMCSOP, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page2_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page2_2, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt2_2 <- ggplot_gtable(ggplot_build(plot2_2))
-gt2_2$heights[9] <- 0.5 * gt2_2$heights[9]
-grid.draw(gt2_2)
+gen_plot_ops(t_page2_2, "TERMCSOP")
 ```
 
 ***
@@ -244,32 +146,7 @@ Manuális folyamat {.storyboard}
 t_page3_1 <- read.csv(here::here("Data", "t_page3_1.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot3_1 <- ggplot(t_page3_1, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ FELDOLG_AG, scales = "free", space = "fixed") +
-  geom_line(
-    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page3_1, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page3_1, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt3_1 <- ggplot_gtable(ggplot_build(plot3_1))
-gt3_1$heights[9] <- 0.5 * gt3_1$heights[9]
-grid.draw(gt3_1)
+gen_plot_ops(t_page3_1, "FELDOLG_AG")
 ```
 
 ***
@@ -285,32 +162,7 @@ grid.draw(gt3_1)
 t_page3_2 <- read.csv(here::here("Data", "t_page3_2.csv"), stringsAsFactors = FALSE)
 
 # Plot
-plot3_2 <- ggplot(t_page3_2, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(DIMENZIÓ ~ SZEGMENS, scales = "free", space = "fixed", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = subset(t_page3_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_point(
-    data = subset(t_page3_2, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-    aes(group = MUTATÓ, colour = MUTATÓ)
-  ) +
-  geom_bar(data = subset(t_page3_2, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
-# Adjust facet sizes manually
-# Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
-gt3_2 <- ggplot_gtable(ggplot_build(plot3_2))
-gt3_2$heights[9] <- 0.5 * gt3_2$heights[9]
-grid.draw(gt3_2)
+gen_plot_ops(t_page3_2, "SZEGMENS")
 ```
 
 ***
@@ -325,38 +177,7 @@ grid.draw(gt3_2)
 t_page3_3 <- read.csv(here::here("Data", "t_page3_3.csv"), stringsAsFactors = FALSE)
 
 # Plot
-ggplot(t_page3_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(MUTATÓ~., scales = "free", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_point(
-    data = filter(t_page3_3, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_line(
-    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_point(
-    data = filter(t_page3_3, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_bar(data = filter(t_page3_3, MUTATÓ == "Volumen [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
+gen_plot_ops_cost(t_page3_3)
 ```
 
 ***
@@ -373,39 +194,7 @@ ggplot(t_page3_3, aes(x = IDOSZAK, y = ÉRTÉK)) +
 t_page3_4 <- read.csv(here::here("Data", "t_page3_4.csv"), stringsAsFactors = FALSE)
 
 # Plot
-ggplot(t_page3_4, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(MUTATÓ~TERMCSOP, scales = "free", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_point(
-    data = filter(t_page3_4, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_line(
-    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_point(
-    data = filter(t_page3_4, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_bar(data = filter(t_page3_4, MUTATÓ == "Volumen [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
+gen_plot_ops_cost(t_page3_4, "TERMCSOP")
 ```
 
 ***
@@ -420,39 +209,7 @@ ggplot(t_page3_4, aes(x = IDOSZAK, y = ÉRTÉK)) +
 t_page3_5 <- read.csv(here::here("Data", "t_page3_5.csv"), stringsAsFactors = FALSE)
 
 # Plot
-ggplot(t_page3_5, aes(x = IDOSZAK, y = ÉRTÉK)) +
-  facet_grid(MUTATÓ~SZEGMENS, scales = "free", labeller = label_wrap_gen(width=20)) +
-  geom_line(
-    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_point(
-    data = filter(t_page3_5, MUTATÓ == "Erõforrásigény [FTE]"),
-    aes(group = 1),
-    colour = "#619CFF"
-  ) +
-  geom_line(
-    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_point(
-    data = filter(t_page3_5, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-    aes(group = 1),
-    colour = "#F8766D"
-  ) +
-  geom_bar(data = filter(t_page3_5, MUTATÓ == "Volumen [db]"), stat = "identity") +
-  labs(
-    y = "Értékek",
-    x = "Idõszak",
-    colour = "Mutató"
-  ) +
-  theme(
-    legend.position = c(0.1, 0.9),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  )
-
+gen_plot_ops_cost(t_page3_5, "SZEGMENS")
 ```
 
 ***
