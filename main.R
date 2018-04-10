@@ -223,16 +223,24 @@ gen_plot_sales(s_page4, "SZEGMENS")
 # Channel: tied agents ----------------------------------------------------------------------
 # Page 3 ------------------------------------------------------------------------------------
 # Total lead times
-s_page5 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat" &
-                                                      stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK")
+unique_periods <- sort(unique(t_uw$IDOSZAK))
+t1 <- unique_periods[length(unique_periods)]
+t2 <- unique_periods[length(unique_periods) - 1]
+
+
+s_page5 <- gen_aggregate_sales_tied(t_uw %>%
+  filter(ERTCSAT == "Hálózat"), "IDOSZAK") %>%
+  filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
+  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
+
 write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
 
 
-gen_plot_sales_tied(s_page5)
-
 # Total lead time with total volumes broken down by product line
-s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat" &
-                                                      stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP")
+s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat"), "IDOSZAK", "TERMCSOP") %>%
+  filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
+           & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
+
 write.csv(s_page6, here::here("Data", "s_page6.csv"), row.names = FALSE)
-gen_plot_sales_tied(s_page6, "TERMCSOP")
+
 

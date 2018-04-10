@@ -35,6 +35,7 @@ Column {.sidebar data-width=450}
 * A mutatók értelmezéshez két tájékozató adatot is tartalmaz a diagram:
     + **TÁJ: Kötv-díjbefiz [mnap]**: az ajánlat kötvényesítésétõl az elsõ díj befizetéséig eltelt munkanapok száma
     + **TÁJ: Volumen [mnap]**: idõszakban menesztett hálózat által szerzett ajánlatok darabszáma
+* A díjfeldolgozási mérõszámok stabilan **t-3** hónapra számolhatók (áprilisban maximum januárra)
 * **Értelmezés**:
     + A kötvényesítés és az elsõ díj könyvelése között eltelt idõt befolyásolja, hogy a **díj mikor érkezik be** a kötvényesítéshez képest
     + A kötvényesítés és díjbefizetés között eltelt munkanapok számából (alulról a második tájékoztató grafikon) látszik, hogy míg az **állomány fele esetében a díj már beérkezett a kötvényesítés idõpontjában** (medián 0 értéke), addig az **állomány másik felében a díj csak napokkal a kötvényesítés után kerül befizetésre**
