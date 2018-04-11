@@ -139,73 +139,6 @@ dijerkdat date,
 dijkonyvdat date);
 COMMIT;
 
---Create helpers
-DROP TABLE T_DIJ_HELPER_ABLAK;
-COMMIT;
-
-
-CREATE TABLE T_DIJ_HELPER_ABLAK as
-SELECT   a.szerzazon,
-         MIN (f_dijbeido) AS dijbefizdat,
-         MIN (f_banknap) AS dijerkdat,
-         MIN (f_datum) AS dijkonyvdat
-  FROM   t_uw_port a, ab_t_dijtabla@dl_peep b
- WHERE   a.szerzazon = b.f_szerz_azon AND a.termcsop <> 'Life'
- GROUP BY a.szerzazon;
-COMMIT;
-
-
-DROP TABLE T_DIJ_HELPER_FUFI;
-COMMIT;
-
-CREATE TABLE T_DIJ_HELPER_FUFI
-AS
-     SELECT   c.szerzazon,
-              MIN (b.payment_date) AS dijbefizdat,
-              MIN (b.value_date) AS dijerkdat,
-              MIN (a.application_date) AS dijkonyvdat
-       FROM   fmoney_in_application@dl_peep a,
-              (SELECT   DISTINCT money_in_idntfr,
-                                 payment_mode,
-                                 money_in_type,
-                                 ifi_mozgaskod,
-                                 payment_date,
-                                 value_date
-                 FROM   fmoney_in@dl_peep) b,
-              t_uw_port c
-      WHERE       c.vonalkod = a.proposal_idntfr
-              AND a.money_in_idntfr = b.money_in_idntfr
-              AND ref_entity_type = 'Premium'
-              AND application_status = 'normal'
-              AND a.cntry_flg = 'HU'
-              AND a.currncy_code = 'HUF'
-              AND money_in_type IN ('propprem', 'reguprem')
-              AND payment_mode IN ('drcr1', 'inttrnsf')
-              AND ifi_mozgaskod IN ('117', '127', '126')
-              AND c.termcsop = 'Life'
-   GROUP BY   c.szerzazon;
-COMMIT;
-
-DROP TABLE T_DIJ_HELPER;
-COMMIT;
-
---Merge helpers
-CREATE TABLE T_DIJ_HELPER
-AS
-SELECT * from T_DIJ_HELPER_ABLAK
-UNION 
-SELECT * from T_DIJ_HELPER_FUFI;
-COMMIT;
-
---Add to main
-UPDATE   t_uw_port a
-   SET   (dijbefizdat,dijerkdat,dijkonyvdat) =
-            (SELECT   dijbefizdat, dijerkdat, dijkonyvdat
-               FROM   T_DIJ_HELPER b
-              WHERE   a.szerzazon = b.szerzazon);
-
-COMMIT;
-
 
 --Drop repeated rows
 DELETE FROM   t_uw_port
@@ -250,8 +183,81 @@ COMMIT;
 --COMMIT;
 
 
---DROP TABLE t_uw_history_r;
---COMMIT;
+
+--Premiums: refresh historic table
+--Create helpers
+DROP TABLE T_DIJ_HELPER_ABLAK;
+COMMIT;
+
+
+CREATE TABLE T_DIJ_HELPER_ABLAK as
+SELECT   a.szerzazon,
+         MIN (f_dijbeido) AS dijbefizdat,
+         MIN (f_banknap) AS dijerkdat,
+         MIN (f_datum) AS dijkonyvdat
+  FROM   t_uw_history a, ab_t_dijtabla@dl_peep b
+ WHERE   a.szerzazon = b.f_szerz_azon AND a.termcsop <> 'Life'
+ GROUP BY a.szerzazon;
+COMMIT;
+
+
+DROP TABLE T_DIJ_HELPER_FUFI;
+COMMIT;
+
+CREATE TABLE T_DIJ_HELPER_FUFI
+AS
+     SELECT   c.szerzazon,
+              MIN (b.payment_date) AS dijbefizdat,
+              MIN (b.value_date) AS dijerkdat,
+              MIN (a.application_date) AS dijkonyvdat
+       FROM   fmoney_in_application@dl_peep a,
+              (SELECT   DISTINCT money_in_idntfr,
+                                 payment_mode,
+                                 money_in_type,
+                                 ifi_mozgaskod,
+                                 payment_date,
+                                 value_date
+                 FROM   fmoney_in@dl_peep) b,
+              t_uw_history c
+      WHERE       c.vonalkod = a.proposal_idntfr
+              AND a.money_in_idntfr = b.money_in_idntfr
+              AND ref_entity_type = 'Premium'
+              AND application_status = 'normal'
+              AND a.cntry_flg = 'HU'
+              AND a.currncy_code = 'HUF'
+              AND money_in_type IN ('propprem', 'reguprem')
+              AND payment_mode IN ('drcr1', 'inttrnsf')
+              AND ifi_mozgaskod IN ('117', '127', '126')
+              AND c.termcsop = 'Life'
+   GROUP BY   c.szerzazon;
+COMMIT;
+
+DROP TABLE T_DIJ_HELPER;
+COMMIT;
+
+--Merge helpers
+CREATE TABLE T_DIJ_HELPER
+AS
+SELECT * from T_DIJ_HELPER_ABLAK
+UNION 
+SELECT * from T_DIJ_HELPER_FUFI;
+COMMIT;
+
+--Add to main
+UPDATE   t_uw_history a
+   SET   (dijbefizdat,dijerkdat,dijkonyvdat) =
+            (SELECT   dijbefizdat, dijerkdat, dijkonyvdat
+               FROM   T_DIJ_HELPER b
+              WHERE   a.szerzazon = b.szerzazon);
+
+COMMIT;
+
+
+
+
+
+DROP TABLE t_uw_history_r;
+COMMIT;
 
 CREATE TABLE t_uw_history_r
 AS
@@ -284,6 +290,15 @@ AS
                2
             )
                AS szerz_dijbefiz_mnap,
+               
+            ROUND (dijerkdat - szerzdat, 2) AS szerz_dijerk_nnap,
+            ROUND (
+                 dijerkdat
+               - szerzdat
+               - bnap_db@dl_peep (szerzdat, dijerkdat),
+               2
+            )
+               AS szerz_dijerk_mnap,  
             ROUND (dijkonyvdat - szerzdat, 2) AS szerz_dijkonyv_nnap,
             ROUND (
                  dijkonyvdat
