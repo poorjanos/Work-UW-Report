@@ -153,6 +153,11 @@ DELETE FROM   t_uw_port
 COMMIT;
 
 
+--Drop erroneous sig dates
+DELETE FROM t_uw_port WHERE erkdat-alirdat > 90;
+COMMIT;
+
+
 --INSERT INTO t_uw_history (idoszak,
 --                          vonalkod,
 --                          szerzazon,

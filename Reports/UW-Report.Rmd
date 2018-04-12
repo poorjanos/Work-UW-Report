@@ -132,7 +132,7 @@ gen_plot_ops(t_page2_2, "TERMCSOP")
 
 ***
 * A termékcsoportok között jelentõs különbségek tapasztalhatók, mind a feldolgozott volumen, mind a kötvényesítés átfutási idejének szempontjából
-* A Casco és Élet módoztok tipukusan lasabban kötvényesíthetõk, mint a Lakás  és GFB termékek
+* A Casco és Élet módoztok tipikusan lassabban kötvényesíthetõk, mint a Lakás  és GFB termékek
 
 
 

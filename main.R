@@ -196,6 +196,13 @@ write.csv(t_page3_5, here::here("Data", "t_page3_5.csv"), row.names = FALSE)
 
 # Sales Report ----------------------------------------------------------------------------
 
+# Create new prod line var to separate code 127* to label
+t_uw <- t_uw %>%
+  mutate(TERMCSOP_SALES = case_when(
+    .$TERMCSOP == "Lakás" & stringr::str_detect(.$MODKOD, "127")  ~ "Baleset",
+    TRUE ~ .$TERMCSOP
+  ))
+
 
 # All channels ----------------------------------------------------------------------------
 # Page 1 ----------------------------------------------------------------------------------
@@ -206,8 +213,8 @@ gen_plot_sales(s_page1)
 
 # Page 2------------------------------------------------------------------------------------
 # Total lead time with total volumes broken down by product line
-s_page2 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP")
-gen_plot_sales(s_page2, "TERMCSOP")
+s_page2 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP_SALES")
+gen_plot_sales(s_page2, "TERMCSOP_SALES")
 
 # Total lead time with total volumes broken down by sales channel
 s_page3 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "ERTCSAT")
@@ -215,8 +222,8 @@ gen_plot_sales(s_page3, "ERTCSAT")
 
 # Total lead time with total volumes broken down by sales channel
 s_page4 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")),
-                               "IDOSZAK", "ERTCSAT", "TERMCSOP") %>% 
-            mutate(SZEGMENS = paste0(ERTCSAT, '::', TERMCSOP))
+                               "IDOSZAK", "ERTCSAT", "TERMCSOP_SALES") %>% 
+            mutate(SZEGMENS = paste0(ERTCSAT, '::', TERMCSOP_SALES))
 gen_plot_sales(s_page4, "SZEGMENS")
 
 
@@ -237,7 +244,7 @@ write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
 
 
 # Total lead time with total volumes broken down by product line
-s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat"), "IDOSZAK", "TERMCSOP") %>%
+s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat"), "IDOSZAK", "TERMCSOP_SALES") %>%
   filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
            & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
 
