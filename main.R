@@ -235,12 +235,12 @@ gen_plot_sales(s_page4, "SZEGMENS")
 unique_periods <- sort(unique(t_uw$IDOSZAK))
 t1 <- unique_periods[length(unique_periods)]
 t2 <- unique_periods[length(unique_periods) - 1]
-
+t3 <- unique_periods[length(unique_periods) - 2]
 
 s_page5 <- gen_aggregate_sales_tied(t_uw %>%
   filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK") %>%
   filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
-  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
+  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2) | stringr::str_detect(IDOSZAK, t3))))
 
 write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
 
@@ -248,8 +248,7 @@ write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
 # Total lead time with total volumes broken down by product line
 s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK", "TERMCSOP_SALES") %>%
   filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
-           & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
+  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2) | stringr::str_detect(IDOSZAK, t3))))
 
 write.csv(s_page6, here::here("Data", "s_page6.csv"), row.names = FALSE)
-
 
