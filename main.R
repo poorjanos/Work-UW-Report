@@ -105,7 +105,6 @@ t_uw <- t_uw %>%
 #########################################################################################
 
 
-
 # AFC Report ---------------------------------------------------------------------------
 
 # Page1 ---------------------------------------------------------------------------------
@@ -203,6 +202,9 @@ t_uw <- t_uw %>%
     TRUE ~ .$TERMCSOP
   ))
 
+# Create flag for outliers
+t_uw <- t_uw %>% mutate(OUTLIER = case_when(SZERZ_DIJKONYV_MNAP > 90 ~ 1,
+                          TRUE ~ 0))
 
 # All channels ----------------------------------------------------------------------------
 # Page 1 ----------------------------------------------------------------------------------
@@ -236,7 +238,7 @@ t2 <- unique_periods[length(unique_periods) - 1]
 
 
 s_page5 <- gen_aggregate_sales_tied(t_uw %>%
-  filter(ERTCSAT == "Hálózat"), "IDOSZAK") %>%
+  filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK") %>%
   filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
   & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
 
@@ -244,7 +246,7 @@ write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
 
 
 # Total lead time with total volumes broken down by product line
-s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat"), "IDOSZAK", "TERMCSOP_SALES") %>%
+s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK", "TERMCSOP_SALES") %>%
   filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
            & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2))))
 

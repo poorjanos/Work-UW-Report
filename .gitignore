@@ -1,6 +1,7 @@
 # Output files
 *.html
 *.csv
+*.png
 
 # History files
 .Rhistory

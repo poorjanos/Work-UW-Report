@@ -31,8 +31,9 @@ Column {.sidebar data-width=300}
 
 * Az ajánlat feldolgozási folyamat központi és legerõforrásigényesebb része az ajánlat AFC-hez érkezésétõl a kötvényesítésig (menesztésig) tartó szakasz
 * Ez a riport havonta követi az érkezéstõl menesztésig tartó szakasz
-    + fõ teljesítménymutatóinak változását és
-    + volumenének alakulását
+    + fõ teljesítménymutatóinak változását,
+    + volumenének alakulását és
+    + a manuális folymamat emberi erõforrásigényét
 * A riport külön tartalmi blokkban mutatja meg
     + a teljes folymatot (automatán és manuálisan kezelt folyamatágak egyben)
     + és csak a manuális folymatot (AFC core folyamata)
@@ -117,7 +118,7 @@ gen_plot_ops(t_page2_3, "FELDOLG_AG")
 * Happy flow: az ajánlat **megszakítás nélkül** halad keresztül a folyamaton, hiánypótlás, hibakezelés nem szükséges
     + az automatikus kötvényesítési ág teljes egészében ide tartozik
     + a manuális kötvényesítési ág azon része tartozik ide, ahol a folymatot nem kell megszakítani
-* Hibaág: az ajánlat feldolgozását meg kell szakítani és **csak külsõ input beérkezése esetén folytatható**, tipikusan hiánypótlás, hibakezelés (exception flow)
+* Hibaág: az ajánlat feldolgozását meg kell szakítani és **csak külsõ input beérkezése esetén folytatható**, tipikusan hiánypótlás, hibakezelés, kockázatelbíráláshoz adatbekérés (exception flow)
 
 
 ### Ezen az ábrán külön mutatjuk meg a négy fõ **termékvonal** teljesítménymutatóit 
