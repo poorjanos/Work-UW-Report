@@ -1,3 +1,16 @@
+# Data generation for two separate reports
+# Report AFC
+#   Dataset cleaned of 2 outliers
+#     ALIR_SZERZ > 90 - atdolg
+#     ERK_SZERZ > 100
+#     
+# Report Sales
+#   Dataset cleaned of 3 outliers
+#     ALIR_SZERZ > 90 - atdolg
+#     ERK_SZERZ > 100 
+#     SZERZ_DIJKONYV > 90 - deferred payments  
+
+
 # Load required libs
 library(config)
 library(here)
@@ -201,10 +214,6 @@ t_uw <- t_uw %>%
     .$TERMCSOP == "Lakás" & stringr::str_detect(.$MODKOD, "127")  ~ "Baleset",
     TRUE ~ .$TERMCSOP
   ))
-
-# Create flag for outliers
-t_uw <- t_uw %>% mutate(OUTLIER = case_when(SZERZ_DIJKONYV_MNAP > 90 ~ 1,
-                          TRUE ~ 0))
 
 # All channels ----------------------------------------------------------------------------
 # Page 1 ----------------------------------------------------------------------------------

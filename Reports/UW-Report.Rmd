@@ -182,7 +182,7 @@ gen_plot_ops_cost(t_page3_3)
 ```
 
 ***
-* **Erõforrásigény:** adott idõszakban a feldolgozásban felhasznált teljes FTE (full-time equivalent = teljes állásban foglalkoztatott dolgozó)
+* **Erõforrásigény:** adott idõszakban menesztett állomány mnuális kezelésében felhasznált teljes FTE (full-time equivalent = teljes állásban foglalkoztatott dolgozó)
     + az FTE érték nem egyenlõ a létszámszükséglettel, a szükséges nettó munkaerõt jelöli
     + a létszámigény számításához az FTE-t 1,3-as korrekciós együtthatóval kell szorozni, hogy megkapjuk a betegségek és szabadságok miatt kiesõ erõforrás pótlásának szükségletét is
 * **Hatékonyság:** 1000 tétel menesztéséhez szükséges FTE, tehát az erõforrásigény darabszámmal normált (fajlagosított) értéke; megmutatja az összehasonlított dimenziók egymáshoz képesti erõforrásigényét, tehát a feldolgozás hatékonyságát

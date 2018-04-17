@@ -3,6 +3,7 @@
 gen_aggregate <- function(df, ...) {
   # Returns aggregated df fit for plotting in a faceted way
   t_grouped <- df %>%
+    filter(ALIR_SZERZ_NNAP < 90 | ERK_SZERZ < 100) %>% # clear atdolgozas and outliers
     group_by_(...) %>%
     summarize(
       ÁTLAG = mean(ERK_SZERZ, na.rm = TRUE),
@@ -27,6 +28,7 @@ gen_aggregate_cost <- function(df, df_wdays, ...){
   # Returns aggregated cost computations fit for plotting in a faceted way
   t_grouped <- df %>%
     filter(UW_TIP == "Manuális kötvényesítés") %>%
+    filter(ALIR_SZERZ_NNAP < 90 | ERK_SZERZ < 100) %>% # clear atdolgozas and outliers
     group_by_(...) %>%
     summarise(
       SUM_EMBERNAP = sum(FELDOLG_IDO_PERC) / 60 / 7,
@@ -124,6 +126,9 @@ gen_plot_ops_cost <- function(df, group = "."){
 gen_aggregate_sales <- function(df, ...) {
   # Returns aggregated df fit for plotting in a faceted way (sales)
   t_grouped <- df %>%
+    filter(ALIR_SZERZ_NNAP < 90 | ERK_SZERZ < 100) %>% # clear atdolgozas and outliers
+    filter(SZERZ_DIJKONYV_MNAP < 90) %>% # clear deferred payments
+    filter(ALIR_DIJBEFIZ_NNAP > 0) %>%  # clear erroneous payment dates
     group_by_(...) %>%
     summarize(
       ALIR_SZERZ_ATLAG = mean(ALIR_SZERZ_MNAP, na.rm = TRUE),
@@ -167,6 +172,9 @@ gen_aggregate_sales <- function(df, ...) {
 gen_aggregate_sales_tied <- function(df, ...) {
   # Returns aggregated df fit for plotting in a faceted way (sales)
   t_grouped <- df %>%
+    filter(ALIR_SZERZ_NNAP < 90 | ERK_SZERZ < 100) %>% # clear atdolgozas and outliers
+    filter(SZERZ_DIJKONYV_MNAP < 90) %>% # clear deferred payments
+    filter(ALIR_DIJBEFIZ_NNAP > 0) %>%  # clear erroneous payment dates
     group_by_(...) %>%
     summarize(
       ALIR_SZERZ_ATLAG = mean(ALIR_SZERZ_MNAP, na.rm = TRUE),
