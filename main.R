@@ -215,29 +215,6 @@ t_uw <- t_uw %>%
     TRUE ~ .$TERMCSOP
   ))
 
-# All channels ----------------------------------------------------------------------------
-# Page 1 ----------------------------------------------------------------------------------
-# Total lead times
-s_page1 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK")
-gen_plot_sales(s_page1)
-
-
-# Page 2------------------------------------------------------------------------------------
-# Total lead time with total volumes broken down by product line
-s_page2 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "TERMCSOP_SALES")
-gen_plot_sales(s_page2, "TERMCSOP_SALES")
-
-# Total lead time with total volumes broken down by sales channel
-s_page3 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")), "IDOSZAK", "ERTCSAT")
-gen_plot_sales(s_page3, "ERTCSAT")
-
-# Total lead time with total volumes broken down by sales channel
-s_page4 <- gen_aggregate_sales(t_uw %>% filter(stringr::str_detect(IDOSZAK, "2017")),
-                               "IDOSZAK", "ERTCSAT", "TERMCSOP_SALES") %>% 
-            mutate(SZEGMENS = paste0(ERTCSAT, '::', TERMCSOP_SALES))
-gen_plot_sales(s_page4, "SZEGMENS")
-
-
 # Channel: tied agents ----------------------------------------------------------------------
 # Page 3 ------------------------------------------------------------------------------------
 # Total lead times
