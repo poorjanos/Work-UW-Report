@@ -59,11 +59,12 @@ gen_plot_ops <- function(df, group = "."){
       data = subset(df, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
       aes(group = MUTATÓ, colour = MUTATÓ)
     ) +
-    geom_point(
+    geom_point_interactive(
       data = subset(df, DIMENZIÓ == "ÁTFUTÁS [mnap]"),
-      aes(group = MUTATÓ, colour = MUTATÓ)
+      aes(group = MUTATÓ, colour = MUTATÓ, tooltip = round(ÉRTÉK, 2))
     ) +
-    geom_bar(data = subset(df, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity") +
+    geom_bar_interactive(data = subset(df, DIMENZIÓ == "VOLUMEN [db]"), stat = "identity",
+                         aes(tooltip = ÉRTÉK)) +
     labs(
       y = "Értékek",
       x = "Idõszak",
@@ -73,14 +74,15 @@ gen_plot_ops <- function(df, group = "."){
       legend.position = c(0.1, 0.85),
       axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
       axis.text.y = element_text(size = 10),
-      strip.text.y = element_text(size = 10) 
+      strip.text.x = element_text(size = 10),
+      strip.text.y = element_text(size = 10)
     )
   
   # Adjust facet sizes manually
   # Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
   g <- ggplot_gtable(ggplot_build(p))
   g$heights[8] <- 0.5 * g$heights[8]
-  grid.draw(g)
+  ggiraph(code = grid.draw(g), width_svg = 10)
 }
 
 

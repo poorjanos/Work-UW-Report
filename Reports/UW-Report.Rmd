@@ -15,6 +15,7 @@ library(grid)
 library(here)
 library(ggplot2)
 library(knitr)
+library(ggiraph)
 
 # Import helper functions
 source(here::here("R", "data_manipulation.R"), local = TRUE)
@@ -71,7 +72,7 @@ flexdashboard::valueBox(t_page1 %>% filter(MUTATÓ == "VOLUMEN", IDOSZAK == max(I
 Row {data-height=800}
 -------------------------------------
 ### Kötvényesítési idõ beérkezéstõl menesztésig a teljes havi menesztett állományon
-```{r fig.width=10}
+```{r}
 # Fetch data
 t_page1 <- read.csv(here::here("Data", "t_page1.csv"), stringsAsFactors = FALSE)
 
