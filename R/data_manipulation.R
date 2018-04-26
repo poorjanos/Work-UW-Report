@@ -80,24 +80,28 @@ gen_plot_ops <- function(df, group = "."){
   
   # Adjust facet sizes manually
   # Can view grid layout with gtable_show_layout(gt) to see which grid object to resize
+  
+  # Determine which grid row to modify depending on faceting structure
+  idx <- ifelse(group == ".", 8, 9) 
+  
   g <- ggplot_gtable(ggplot_build(p))
-  g$heights[8] <- 0.5 * g$heights[8]
+  g$heights[idx] <- 0.5 * g$heights[idx]
   ggiraph(code = grid.draw(g), width_svg = 10)
 }
 
 
 gen_plot_ops_cost <- function(df, group = "."){
   # Plot with facets passed as arguments
-  ggplot(df, aes(x = IDOSZAK, y = ÉRTÉK)) +
+  p <- ggplot(df, aes(x = IDOSZAK, y = ÉRTÉK)) +
     facet_grid(paste("MUTATÓ ~", group), scales = "free", labeller = label_wrap_gen(width=20)) +
     geom_line(
       data = filter(df, MUTATÓ == "Erõforrásigény [FTE]"),
       aes(group = 1),
       colour = "#619CFF"
     ) +
-    geom_point(
+    geom_point_interactive(
       data = filter(df, MUTATÓ == "Erõforrásigény [FTE]"),
-      aes(group = 1),
+      aes(group = 1, tooltip = round(ÉRTÉK, 2)),
       colour = "#619CFF"
     ) +
     geom_line(
@@ -105,12 +109,13 @@ gen_plot_ops_cost <- function(df, group = "."){
       aes(group = 1),
       colour = "#F8766D"
     ) +
-    geom_point(
+    geom_point_interactive(
       data = filter(df, MUTATÓ == "Hatékonyság [fajlagos FTE]"),
-      aes(group = 1),
+      aes(group = 1, tooltip = round(ÉRTÉK, 2)),
       colour = "#F8766D"
     ) +
-    geom_bar(data = filter(df, MUTATÓ == "Volumen [db]"), stat = "identity") +
+    geom_bar_interactive(data = filter(df, MUTATÓ == "Volumen [db]"), stat = "identity",
+                         aes(tooltip = ÉRTÉK)) +
     labs(
       y = "Értékek",
       x = "Idõszak",
@@ -120,6 +125,8 @@ gen_plot_ops_cost <- function(df, group = "."){
       legend.position = c(0.1, 0.9),
       axis.text.x = element_text(angle = 90, vjust = 0.5)
     )
+  
+  ggiraph(code = print(p), width_svg = 10)
 }
 
 
@@ -288,27 +295,28 @@ gen_plot_sales_tied <- function(df, group = "."){
       data = subset(df, DIMENZIÓ == "1. Aláír-kötv [mnap]"),
       aes(group = MUTATÓ, colour = MUTATÓ)
     ) +
-    geom_point(
+    geom_point_interactive(
       data = subset(df, DIMENZIÓ == "1. Aláír-kötv [mnap]"),
-      aes(group = MUTATÓ, colour = MUTATÓ)
+      aes(group = MUTATÓ, colour = MUTATÓ, tooltip = round(ÉRTÉK, 2))
     ) +
     geom_line(
       data = subset(df, DIMENZIÓ == "2. Kötv-díjkönyv [mnap]"),
       aes(group = MUTATÓ, colour = MUTATÓ)
     ) +
-    geom_point(
+    geom_point_interactive(
       data = subset(df, DIMENZIÓ == "2. Kötv-díjkönyv [mnap]"),
-      aes(group = MUTATÓ, colour = MUTATÓ)
+      aes(group = MUTATÓ, colour = MUTATÓ, tooltip = round(ÉRTÉK, 2))
     ) +
     geom_line(
       data = subset(df, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [mnap]"),
       aes(group = MUTATÓ, colour = MUTATÓ)
     ) +
-    geom_point(
+    geom_point_interactive(
       data = subset(df, DIMENZIÓ == "TÁJ: Kötv-díjbefiz [mnap]"),
-      aes(group = MUTATÓ, colour = MUTATÓ)
+      aes(group = MUTATÓ, colour = MUTATÓ, tooltip = round(ÉRTÉK, 2))
     ) +
-    geom_bar(data = subset(df, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity") +
+    geom_bar_interactive(data = subset(df, DIMENZIÓ == "TÁJ: Volumen [db]"), stat = "identity",
+                         aes(tooltip = ÉRTÉK)) +
     labs(
       y = "Értékek",
       x = "Idõszak",
@@ -335,5 +343,5 @@ gen_plot_sales_tied <- function(df, group = "."){
   g <- ggplot_gtable(ggplot_build(p))
   g$heights[h1] <- 0.6 * g$heights[h1]
   g$heights[h2] <- 0.6 * g$heights[h2]
-  grid.draw(g)
+  ggiraph(code = grid.draw(g), width_svg = 8)
 }

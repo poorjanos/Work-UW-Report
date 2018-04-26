@@ -15,6 +15,7 @@ library(grid)
 library(here)
 library(ggplot2)
 library(knitr)
+library(ggiraph)
 
 # Import helper functions
 source(here::here("R", "data_manipulation.R"), local = TRUE)
