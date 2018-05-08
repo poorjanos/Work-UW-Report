@@ -51,8 +51,8 @@ AS
                AS kimenet,
             szerzdat - erkdat - bnap_db@dl_peep (szerzdat, erkdat)
                AS ERK_SZERZ
-     FROM   pss_201710_kieg@dl_peep a
-    WHERE   TRUNC (szerzdat, 'mm') >= DATE '2017-10-01';
+     FROM   pss_201804_kieg@dl_peep a
+    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-04-01';
 COMMIT;
 
 DROP TABLE t_uw_kontakt_helper;
@@ -70,6 +70,8 @@ AS
                      ('MARKIB', 'SZERENCSEK');
 
 COMMIT;
+
+
 DROP INDEX port;
 
 CREATE INDEX port
@@ -82,6 +84,8 @@ CREATE INDEX kontakt
    ON t_uw_kontakt_helper (f_ivk);
 
 COMMIT;
+
+
 ALTER TABLE t_uw_port
 ADD
 (
@@ -158,34 +162,34 @@ DELETE FROM t_uw_port WHERE erkdat-alirdat > 90;
 COMMIT;
 
 
---INSERT INTO t_uw_history (idoszak,
---                          vonalkod,
---                          szerzazon,
---                          modkod,
---                          ugynokkod,
---                          ugynoknev,
---                          ktikod,
---                          ktinev,
---                          ertcsat,
---                          alirdat,
---                          erkdat,
---                          szerzdat,
---                          elutdat,
---                          stornodat,
---                          postdat,
---                          termcsop,
---                          kotes_tipus,
---                          medium_tipus,
---                          kimenet,
---                          erk_szerz,
---                          feldolg_ag,
---                          feldolg_ido_perc,
---                          dijbefizdat,
---                          dijerkdat,
---                          dijkonyvdat
---                          )
---     SELECT   * FROM t_uw_port;
---COMMIT;
+INSERT INTO t_uw_history (idoszak,
+                          vonalkod,
+                          szerzazon,
+                          modkod,
+                          ugynokkod,
+                          ugynoknev,
+                          ktikod,
+                          ktinev,
+                          ertcsat,
+                          alirdat,
+                          erkdat,
+                          szerzdat,
+                          elutdat,
+                          stornodat,
+                          postdat,
+                          termcsop,
+                          kotes_tipus,
+                          medium_tipus,
+                          kimenet,
+                          erk_szerz,
+                          feldolg_ag,
+                          feldolg_ido_perc,
+                          dijbefizdat,
+                          dijerkdat,
+                          dijkonyvdat
+                          )
+     SELECT   * FROM t_uw_port;
+COMMIT;
 
 
 
