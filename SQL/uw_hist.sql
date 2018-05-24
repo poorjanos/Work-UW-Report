@@ -235,8 +235,6 @@ AS
               AND a.cntry_flg = 'HU'
               AND a.currncy_code = 'HUF'
               AND money_in_type IN ('propprem', 'reguprem')
-              AND payment_mode IN ('drcr1', 'inttrnsf')
-              AND ifi_mozgaskod IN ('117', '127', '126')
               AND c.termcsop = 'Life'
    GROUP BY   c.szerzazon;
 COMMIT;
