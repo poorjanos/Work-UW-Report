@@ -51,8 +51,8 @@ AS
                AS kimenet,
             szerzdat - erkdat - bnap_db@dl_peep (szerzdat, erkdat)
                AS ERK_SZERZ
-     FROM   pss_201804_kieg@dl_peep a
-    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-04-01';
+     FROM   pss_201805_kieg@dl_peep a
+    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-05-01';
 COMMIT;
 
 DROP TABLE t_uw_kontakt_helper;
@@ -249,6 +249,20 @@ SELECT * from T_DIJ_HELPER_ABLAK
 UNION 
 SELECT * from T_DIJ_HELPER_FUFI;
 COMMIT;
+
+DROP INDEX uw;
+CREATE INDEX uw
+   ON t_uw_history (szerzazon);
+COMMIT;
+
+
+DROP INDEX dij;
+CREATE INDEX dij
+   ON T_DIJ_HELPER (szerzazon);
+
+COMMIT;
+
+
 
 --Add to main
 UPDATE   t_uw_history a
