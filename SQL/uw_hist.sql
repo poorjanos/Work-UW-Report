@@ -51,8 +51,8 @@ AS
                AS kimenet,
             szerzdat - erkdat - bnap_db@dl_peep (szerzdat, erkdat)
                AS ERK_SZERZ
-     FROM   pss_201806_kieg@dl_peep a
-    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-06-01';
+     FROM   pss_201809_kieg@dl_peep a
+    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-09-01';
 COMMIT;
 
 DROP TABLE t_uw_kontakt_helper;
