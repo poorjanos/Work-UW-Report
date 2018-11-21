@@ -52,7 +52,7 @@ library(RJDBC)
 
 # Get credentials
 kontakt <-
-  config::get("kontakt", file = "C:\\Users\\PoorJ\\Projects\\config.yml")
+  config::get("datamnr", file = "C:\\Users\\PoorJ\\Projects\\config.yml")
 
 # Create connection driver
 jdbcDriver <-
@@ -69,7 +69,9 @@ jdbcConnection <-
 
 # Fetch data
 query_uw_data <- "select * from t_uw_history_r"
+query_mnap <- "select * from t_mnap"
 t_uw <- dbGetQuery(jdbcConnection, query_uw_data)
+t_mnap <- dbGetQuery(jdbcConnection, query_mnap)
 
 # Close db connection: kontakt
 dbDisconnect(jdbcConnection)
@@ -78,6 +80,9 @@ dbDisconnect(jdbcConnection)
 #########################################################################################
 # Data Transformation ###################################################################
 #########################################################################################
+
+# Recode mnap
+t_mnap$IDOSZAK <- paste0(substr(t_mnap$IDOSZAK, 1, 4), "/", substr(t_mnap$IDOSZAK, 6, 7))
 
 # Recode time period
 t_uw$IDOSZAK <-
@@ -202,39 +207,3 @@ write.csv(t_page3_4, here::here("Data", "t_page3_4.csv"), row.names = FALSE)
 t_page3_5 <- gen_aggregate_cost(t_uw, t_mnap, "IDOSZAK", "TERMCSOP", "FELDOLG_AG") %>% 
                 mutate(SZEGMENS = paste0(FELDOLG_AG, '::', TERMCSOP))
 write.csv(t_page3_5, here::here("Data", "t_page3_5.csv"), row.names = FALSE)
-
-
-
-
-# Sales Report ----------------------------------------------------------------------------
-
-# Create new prod line var to separate code 127* to label
-t_uw <- t_uw %>%
-  mutate(TERMCSOP_SALES = case_when(
-    .$TERMCSOP == "Lakás" & stringr::str_detect(.$MODKOD, "127")  ~ "Baleset",
-    TRUE ~ .$TERMCSOP
-  ))
-
-# Channel: tied agents ----------------------------------------------------------------------
-# Page 3 ------------------------------------------------------------------------------------
-# Total lead times
-unique_periods <- sort(unique(t_uw$IDOSZAK))
-t1 <- unique_periods[length(unique_periods)]
-t2 <- unique_periods[length(unique_periods) - 1]
-t3 <- unique_periods[length(unique_periods) - 2]
-
-s_page5 <- gen_aggregate_sales_tied(t_uw %>%
-  filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK") %>%
-  filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
-  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2) | stringr::str_detect(IDOSZAK, t3))))
-
-write.csv(s_page5, here::here("Data", "s_page5.csv"), row.names = FALSE)
-
-
-# Total lead time with total volumes broken down by product line
-s_page6 <- gen_aggregate_sales_tied(t_uw %>% filter(ERTCSAT == "Hálózat", OUTLIER == 0), "IDOSZAK", "TERMCSOP_SALES") %>%
-  filter(!(!DIMENZIÓ %in% c("1. Aláír-kötv [mnap]", "TÁJ: Volumen [db]")
-  & (stringr::str_detect(IDOSZAK, t1) | stringr::str_detect(IDOSZAK, t2) | stringr::str_detect(IDOSZAK, t3))))
-
-write.csv(s_page6, here::here("Data", "s_page6.csv"), row.names = FALSE)
-
