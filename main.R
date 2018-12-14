@@ -51,7 +51,7 @@ print(.jcall("java/lang/System", "S", "getProperty", "java.version"))
 library(RJDBC)
 
 # Get credentials
-kontakt <-
+datamnr <-
   config::get("datamnr", file = "C:\\Users\\PoorJ\\Projects\\config.yml")
 
 # Create connection driver
@@ -62,9 +62,9 @@ jdbcDriver <-
 jdbcConnection <-
   dbConnect(
     jdbcDriver,
-    url = kontakt$server,
-    user = kontakt$uid,
-    password = kontakt$pwd
+    url = datamnr$server,
+    user = datamnr$uid,
+    password = datamnr$pwd
   )
 
 # Fetch data

@@ -58,6 +58,6 @@ AS
             ROUND (szerzdat - alirdat - bnap_db(alirdat, szerzdat),
                    2)
                AS alir_szerz_mnap
-     FROM   pss_201810_kieg a
-    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-10-01';
+     FROM   pss_201811_kieg a
+    WHERE   TRUNC (szerzdat, 'mm') = DATE '2018-11-01';
 COMMIT;
