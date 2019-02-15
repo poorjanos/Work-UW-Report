@@ -28,7 +28,6 @@ CREATE INDEX port
 
 COMMIT;
 
-DROP INDEX kontakt;
 
 CREATE INDEX kontakt
    ON t_uw_kontakt_helper (f_ivk);
