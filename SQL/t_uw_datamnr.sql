@@ -1,3 +1,4 @@
+/* Fetch portfolio data */
 DROP TABLE t_uw_port;
 commit;
 
@@ -5,6 +6,34 @@ CREATE TABLE t_uw_port
 as select * from poorj.t_uw_port@dl_dijtart;
 commit;
 
+/* Compute kpm for life contracts */
+UPDATE   t_uw_port a
+   SET   kimenet = 'Nincs'
+ WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+            'központi menesztés nem futott'
+         AND a.termcsop = 'Life';
+COMMIT;
+
+
+UPDATE   t_uw_port a
+   SET   kimenet = 'Sikeres'
+ WHERE  poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+            'központi menesztés futott'
+         AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =
+               'központi menesztés sikeres'
+         AND a.termcsop = 'Life';
+COMMIT;        
+     
+    
+UPDATE   t_uw_port a
+   SET   kimenet = 'Sikertelen'
+ WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+            'központi menesztés futott'
+         AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =
+               'központi menesztés sikertelen'
+         AND a.termcsop = 'Life';
+COMMIT;                  
+         
 
 DROP TABLE t_uw_kontakt_helper;
 COMMIT;
@@ -72,11 +101,12 @@ UPDATE   t_uw_port a
 COMMIT;
 
 
-UPDATE   t_uw_port a
-   SET   feldolg_ido_perc = NULL
- WHERE   a.kimenet = 'Sikeres kpm' AND feldolg_ido_perc IS NOT NULL;
+--UPDATE   t_uw_port a
+--   SET   feldolg_ido_perc = NULL
+-- WHERE   a.kimenet = 'Sikeres kpm' AND feldolg_ido_perc IS NOT NULL;
 
-COMMIT;
+--COMMIT;
+
 
 UPDATE   t_uw_port a
    SET   feldolg_ag = 'Happy flow'
