@@ -151,7 +151,7 @@ gen_plot_ops(t_page2_4, "SEGMENT")
 * Az automatikus kötvényesítés részaránya változtik a termékvonalak között.
 
 
-### Ezen az ábrán az az **automatikus kötvényesítás havi sikerarányát** mutatjuk meg
+### Ezen az ábrán az az **automatikus kötvényesítés havi sikerarányát** mutatjuk meg
 
 ```{r, fig.width=10}
 # Fetch data
@@ -179,7 +179,7 @@ ggiraph(code = grid.draw(g), width_svg = 10)
 * Az automatikus kötvényesítés részaránya a havi menesztett állományban.
 
 
-### Ezen az ábrán az az **automatikus kötvényesítás havi sikerarányát** mutatjuk meg **termékvonalanként**
+### Ezen az ábrán az az **automatikus kötvényesítés havi sikerarányát** mutatjuk meg **termékvonalanként**
 
 ```{r, fig.width=10}
 # Fetch data
