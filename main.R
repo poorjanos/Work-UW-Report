@@ -133,6 +133,7 @@ t_page1 <- gen_aggregate(t_uw, "IDOSZAK")
 write.csv(t_page1, here::here("Data", "t_page1.csv"), row.names = FALSE)
 
 
+
 # Page2 ---------------------------------------------------------------------------------
 # Full process (automted and manual together)
 
@@ -161,6 +162,49 @@ t_page2_3 <- gen_aggregate(t_uw, "IDOSZAK", "FELDOLG_AG")
 write.csv(t_page2_3, here::here("Data", "t_page2_3.csv"), row.names = FALSE)
 
 
+# Page2_4 ---------------------------------------------------------------------------------
+# Total lead time with total volumes broken down by product line and UW type
+
+# Gen data
+t_page2_4 <- t_uw %>% mutate(UW_TIP = case_when(UW_TIP == "Automatikus kötvényesítés" ~ "Automata",
+                                                TRUE ~ 'Manuális')) %>% 
+  mutate(SEGMENT = paste0(TERMCSOP, "::", UW_TIP)) %>%
+  gen_aggregate("IDOSZAK", "SEGMENT")
+write.csv(t_page2_4, here::here("Data", "t_page2_4.csv"), row.names = FALSE)
+
+
+# Page2_5 ---------------------------------------------------------------------------------
+# AutoUW rate
+
+# Gen data
+t_page2_5 <- t_uw %>% gen_aggregate("IDOSZAK", "UW_TIP") %>% 
+  filter(MUTATÓ == "VOLUMEN") %>% 
+  group_by(IDOSZAK, UW_TIP) %>% 
+  summarize(TOTAL = sum(ÉRTÉK)) %>% 
+  mutate(AUTOUW_RATE = TOTAL/sum(TOTAL)) %>% 
+  filter(UW_TIP == "Automatikus kötvényesítés") %>% 
+  select(IDOSZAK, AUTOUW_RATE)
+write.csv(t_page2_5, here::here("Data", "t_page2_5.csv"), row.names = FALSE)
+
+
+# Page2_6 ---------------------------------------------------------------------------------
+# AutoUW rate by product line
+
+# Gen data
+t_page2_6 <- t_uw %>% gen_aggregate("IDOSZAK", "UW_TIP", "TERMCSOP") %>% 
+  filter(MUTATÓ == "VOLUMEN") %>% 
+  group_by(IDOSZAK, UW_TIP, TERMCSOP) %>% 
+  summarize(TOTAL = sum(ÉRTÉK)) %>%
+  ungroup() %>% 
+  group_by(IDOSZAK, TERMCSOP) %>% 
+  mutate(AUTOUW_RATE = TOTAL/sum(TOTAL)) %>%
+  ungroup() %>% 
+  filter(UW_TIP == "Automatikus kötvényesítés") %>% 
+  select(IDOSZAK, TERMCSOP, AUTOUW_RATE)
+write.csv(t_page2_6, here::here("Data", "t_page2_6.csv"), row.names = FALSE)
+
+
+
 
 # Page3 ---------------------------------------------------------------------------------
 # Manual process
@@ -171,7 +215,6 @@ write.csv(t_page2_3, here::here("Data", "t_page2_3.csv"), row.names = FALSE)
 # Gen data
 t_page3_1 <- gen_aggregate(t_uw %>% filter(UW_TIP == 'Manuális kötvényesítés'), "IDOSZAK", "FELDOLG_AG")
 write.csv(t_page3_1, here::here("Data", "t_page3_1.csv"), row.names = FALSE)
-
 
 
 # Page3_2 ---------------------------------------------------------------------------------

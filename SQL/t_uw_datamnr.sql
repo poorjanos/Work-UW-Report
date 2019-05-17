@@ -8,7 +8,7 @@ commit;
 
 /* Compute kpm for life contracts */
 UPDATE   t_uw_port a
-   SET   kimenet = 'Nincs'
+   SET   kimenet = 'Nincs kpm'
  WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
             'központi menesztés nem futott'
          AND a.termcsop = 'Life';
@@ -16,7 +16,7 @@ COMMIT;
 
 
 UPDATE   t_uw_port a
-   SET   kimenet = 'Sikeres'
+   SET   kimenet = 'Sikeres kpm'
  WHERE  poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
             'központi menesztés futott'
          AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =
@@ -26,7 +26,7 @@ COMMIT;
      
     
 UPDATE   t_uw_port a
-   SET   kimenet = 'Sikertelen'
+   SET   kimenet = 'Sikertelen kpm'
  WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
             'központi menesztés futott'
          AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =

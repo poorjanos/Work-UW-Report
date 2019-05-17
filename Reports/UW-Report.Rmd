@@ -137,6 +137,78 @@ gen_plot_ops(t_page2_2, "TERMCSOP")
 * A Casco és Élet módoztok tipikusan lassabban kötvényesíthetõk, mint a Lakás  és GFB termékek
 
 
+### Ezen az ábrán külön mutatjuk meg a négy fõ **termékvonal** teljesítménymutatóit az **automatikus** és a **manuális** folyamatban
+
+```{r, fig.width=10}
+# Fetch data
+t_page2_4 <- read.csv(here::here("Data", "t_page2_4.csv"), stringsAsFactors = FALSE)
+
+# Plot
+gen_plot_ops(t_page2_4, "SEGMENT")
+```
+
+***
+* Az automatikus kötvényesítés részaránya változtik a termékvonalak között.
+
+
+### Ezen az ábrán az az **automatikus kötvényesítás havi sikerarányát** mutatjuk meg
+
+```{r, fig.width=10}
+# Fetch data
+t_page2_5 <- read.csv(here::here("Data", "t_page2_5.csv"), stringsAsFactors = FALSE)
+
+# Plot
+g <- t_page2_5 %>%  
+  ggplot(aes(x = IDOSZAK, y = AUTOUW_RATE, group = 1)) +
+  geom_line() +
+  geom_point_interactive(data = t_page2_5, aes(tooltip = paste0(round(AUTOUW_RATE, 4)*100, "%"))) +
+  scale_y_continuous(labels = percent) +
+  labs(
+    y = "Automatikus menesztés részaránya",
+    x = "Idõszak"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+
+ggiraph(code = grid.draw(g), width_svg = 10)
+```
+
+***
+* Az automatikus kötvényesítés részaránya a havi menesztett állományban.
+
+
+### Ezen az ábrán az az **automatikus kötvényesítás havi sikerarányát** mutatjuk meg **termékvonalanként**
+
+```{r, fig.width=10}
+# Fetch data
+t_page2_6 <- read.csv(here::here("Data", "t_page2_6.csv"), stringsAsFactors = FALSE)
+
+# Plot
+g <- t_page2_6 %>%  
+  ggplot(aes(x = IDOSZAK, y = AUTOUW_RATE, group = 1)) +
+  geom_line() +
+  geom_point_interactive(data = t_page2_6, aes(tooltip = paste0(round(AUTOUW_RATE, 4)*100, "%"))) +
+  scale_y_continuous(labels = percent) +
+  labs(
+    y = "Automatikus menesztés részaránya",
+    x = "Idõszak"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10),
+    axis.text.y = element_text(size = 10)
+  ) +
+  facet_grid(.~TERMCSOP)
+
+ggiraph(code = grid.draw(g), width_svg = 10)
+```
+
+***
+* Az automatikus kötvényesítés részaránya a havi menesztett állományban termékvonalanként.
+
+
+
 
 Manuális folyamat {.storyboard}
 =========================================
