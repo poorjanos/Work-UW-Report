@@ -39,7 +39,8 @@ t_mnap$IDOSZAK <- paste0(substr(t_mnap$HONAP, 1, 4), "/", substr(t_mnap$HONAP, 6
 #########################################################################################
 
 # Set JAVA_HOME, set max. memory, and load rJava library
-Sys.setenv(JAVA_HOME = "C:\\Program Files\\Java\\jre1.8.0_171")
+java_version = config::get("java_version", file = "C:\\Users\\PoorJ\\Projects\\config.yml")
+Sys.setenv(JAVA_HOME = java_version$JAVA_HOME)
 options(java.parameters = "-Xmx2g")
 library(rJava)
 
