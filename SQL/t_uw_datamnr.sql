@@ -9,7 +9,7 @@ commit;
 /* Compute kpm for life contracts */
 UPDATE   t_uw_port a
    SET   kimenet = 'Nincs kpm'
- WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+ WHERE   poorj.fufi_process_kpm_exists@dl_kontakt (vonalkod) =
             'központi menesztés nem futott'
          AND a.termcsop = 'Life';
 COMMIT;
@@ -17,9 +17,9 @@ COMMIT;
 
 UPDATE   t_uw_port a
    SET   kimenet = 'Sikeres kpm'
- WHERE  poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+ WHERE  poorj.fufi_process_kpm_exists@dl_kontakt (vonalkod) =
             'központi menesztés futott'
-         AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =
+         AND poorj.fufi_process_kpm_result@dl_kontakt (vonalkod) =
                'központi menesztés sikeres'
          AND a.termcsop = 'Life';
 COMMIT;        
@@ -27,9 +27,9 @@ COMMIT;
     
 UPDATE   t_uw_port a
    SET   kimenet = 'Sikertelen kpm'
- WHERE   poorj.fufi_process_kpm_exists@dl_kontakt_poorj (vonalkod) =
+ WHERE   poorj.fufi_process_kpm_exists@dl_kontakt (vonalkod) =
             'központi menesztés futott'
-         AND poorj.fufi_process_kpm_result@dl_kontakt_poorj (vonalkod) =
+         AND poorj.fufi_process_kpm_result@dl_kontakt (vonalkod) =
                'központi menesztés sikertelen'
          AND a.termcsop = 'Life';
 COMMIT;                  
@@ -41,12 +41,12 @@ COMMIT;
 CREATE TABLE t_uw_kontakt_helper
 AS
    SELECT   a.*
-     FROM   afc.t_afc_wflog_lin2@dl_kontakt_poorj a, kontakt.t_lean_alirattipus@dl_kontakt_poorj b
+     FROM   afc.t_afc_wflog_lin2@dl_kontakt a, kontakt.t_lean_alirattipus@dl_kontakt b
     WHERE       f_ivk IN (SELECT   vonalkod FROM t_uw_port)
             AND a.f_alirattipusid = b.f_alirattipusid
             AND b.f_lean_tip = 'AL'
-            AND afc.afc_wflog_intezkedes@dl_kontakt_poorj (a.f_ivkwfid, a.f_logid) IS NOT NULL
-            AND UPPER (kontakt.basic.get_userid_login@dl_kontakt_poorj (a.f_userid)) NOT IN
+            AND afc.afc_wflog_intezkedes@dl_kontakt (a.f_ivkwfid, a.f_logid) IS NOT NULL
+            AND UPPER (kontakt.basic.get_userid_login@dl_kontakt (a.f_userid)) NOT IN
                      ('MARKIB', 'SZERENCSEK');
 
 COMMIT;
@@ -78,9 +78,9 @@ UPDATE   t_uw_port a
             (SELECT   1
                FROM   t_uw_kontakt_helper b
               WHERE   a.vonalkod = b.f_ivk
-                      AND (afc.afc_wflog_intezkedes@dl_kontakt_poorj (b.f_ivkwfid, b.f_logid) LIKE
+                      AND (afc.afc_wflog_intezkedes@dl_kontakt (b.f_ivkwfid, b.f_logid) LIKE
                               '%Várakoztatás szükséges%'
-                           OR afc.afc_wflog_intezkedes@dl_kontakt_poorj (b.f_ivkwfid,
+                           OR afc.afc_wflog_intezkedes@dl_kontakt (b.f_ivkwfid,
                                                         b.f_logid) LIKE
                                 '%Nem zárható le/Reponálás funkció/Reponálás%'));
 
