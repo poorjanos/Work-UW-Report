@@ -50,14 +50,14 @@ AS
             END
                AS kimenet,
                ROUND (erkdat - alirdat, 2) AS alir_erk_nnap,
-            ROUND (erkdat - alirdat - bnap_db(erkdat, alirdat), 2)
+            ROUND (erkdat - alirdat - orbanl.bnap_db(erkdat, alirdat), 2)
                AS alir_erk_mnap,
-            ROUND (szerzdat - erkdat - bnap_db(szerzdat, erkdat), 2) AS erk_szerz,
+            ROUND (szerzdat - erkdat - orbanl.bnap_db(szerzdat, erkdat), 2) AS erk_szerz,
             ROUND (szerzdat - erkdat, 2) AS erk_szerz_nnap,
             ROUND (szerzdat - alirdat, 2) AS alir_szerz_nnap,
-            ROUND (szerzdat - alirdat - bnap_db(alirdat, szerzdat),
+            ROUND (szerzdat - alirdat - orbanl.bnap_db(alirdat, szerzdat),
                    2)
                AS alir_szerz_mnap
-     FROM   pss_202002_kieg a
-    WHERE   TRUNC (szerzdat, 'mm') = DATE '2020-02-01';
+     FROM   pss_202008_kieg a
+    WHERE   TRUNC (szerzdat, 'mm') = DATE '2020-08-01';
 COMMIT;
